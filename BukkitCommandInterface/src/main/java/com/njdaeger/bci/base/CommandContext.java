@@ -12,12 +12,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class CommandContext {
+public abstract class CommandContext {
     
-    private final CommandSender sender;
-    private final Plugin plugin;
-    private final String[] args;
-    private final String alias;
+    protected final CommandSender sender;
+    protected final Plugin plugin;
+    protected final String[] args;
+    protected final String alias;
     
     public CommandContext(Plugin plugin, CommandSender sender, String[] args, String alias) {
         this.plugin = plugin;
@@ -25,6 +25,8 @@ public class CommandContext {
         this.alias = alias;
         this.args = args;
     }
+    
+    protected abstract String getPluginMessagePrefix();
     
     public boolean hasPermission(String permission) {
         return sender.hasPermission(permission);
@@ -137,6 +139,14 @@ public class CommandContext {
         sender.sendMessage(message);
     }
     
-    public void
+    public void send(String message, Object... placeholders) {
+    
+    }
+    
+    public void pluginMessage(String message) {
+        send(getPluginMessagePrefix() + " " + message);
+    }
+    
+    
     
 }
