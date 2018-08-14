@@ -1,8 +1,5 @@
 package com.njdaeger.bci.base;
 
-import com.njdaeger.bci.defaults.BCICommandWrapper;
-import com.njdaeger.bci.defaults.CommandContext;
-import com.njdaeger.bci.defaults.TabContext;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
 import org.bukkit.plugin.Plugin;
@@ -10,11 +7,12 @@ import org.bukkit.plugin.Plugin;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public abstract class AbstractCommandStore<C extends AbstractCommandContext, T extends AbstractTabContext, W extends AbstractCommandWrapper<C, T>> {
     
-    private final Plugin plugin;
-    private final CommandMap bukkitCommandMap;
+    protected final Plugin plugin;
+    private CommandMap bukkitCommandMap = null;
     private final Map<String, BCICommand<C, T>> bciCommandMap;
     
     public AbstractCommandStore(Plugin plugin) {
@@ -29,7 +27,6 @@ public abstract class AbstractCommandStore<C extends AbstractCommandContext, T e
         }
     
         catch (NoSuchFieldException | IllegalAccessException e) {
-            this.bukkitCommandMap = null;
             e.printStackTrace();
         }
     }
@@ -52,6 +49,13 @@ public abstract class AbstractCommandStore<C extends AbstractCommandContext, T e
             wrapper.getAliases().forEach(alias -> bciCommandMap.put(alias, wrapper.command));
             bciCommandMap.put(wrapper.getName(), wrapper.command);
         }
+    }
+    
+    public abstract void registerCommand(BCICommand<C, T> command);
+    
+    @SafeVarargs
+    public final void registerCommands(BCICommand<C, T>... commands) {
+        Stream.of(commands).forEach(this::registerCommand);
     }
     
 }

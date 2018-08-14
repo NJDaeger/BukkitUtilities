@@ -11,7 +11,7 @@ public class BCIException extends Exception {
         this.message = message;
     }
 
-    void showError(CommandSender sender) {
+    public void showError(CommandSender sender) {
         sender.sendMessage(message);
     }
     

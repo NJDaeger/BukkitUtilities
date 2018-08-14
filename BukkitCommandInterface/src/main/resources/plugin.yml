@@ -1,0 +1,5 @@
+name: BukkitCommandInterface
+version: 0.0.1
+description: BukkitCommandInterface (BCI)
+author: NJDaeger
+main: com.njdaeger.bci.BCIPlugin

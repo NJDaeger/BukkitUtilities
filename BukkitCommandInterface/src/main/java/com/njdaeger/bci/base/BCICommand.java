@@ -4,9 +4,11 @@ import com.njdaeger.bci.SenderType;
 import com.njdaeger.bci.base.executors.CommandExecutor;
 import com.njdaeger.bci.base.executors.TabExecutor;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@SuppressWarnings({"unused", "WeakerAccess"})
 public final class BCICommand<C extends AbstractCommandContext, T extends AbstractTabContext> {
     
     private final String name;
@@ -101,17 +103,16 @@ public final class BCICommand<C extends AbstractCommandContext, T extends Abstra
         return aliases;
     }
     
-    public boolean execute(C context) {
+    public void register() {
+    
+    }
+    
+    public final boolean execute(C context) {
         
         try {
             if (senderTypes != null && senderTypes.length != 0) {
                 List<SenderType> types = Arrays.asList(senderTypes);
-                if (context.isConsole() && !types.contains(SenderType.CONSOLE) ||
-                    context.isBlock() && !types.contains(SenderType.BLOCK) ||
-                    context.isEntity() && !types.contains(SenderType.ENTITY) ||
-                    context.isPlayer() && !types.contains(SenderType.PLAYER)) {
-                    context.invalidSender();
-                }
+                if (!types.contains(SenderType.of(context.getSender()))) context.invalidSender();
             }
             
             if (permissions != null) {
@@ -128,13 +129,36 @@ public final class BCICommand<C extends AbstractCommandContext, T extends Abstra
             
             commandExecutor.execute(context);
         } catch (BCIException e) {
-            e.showError(context.sender);
+            e.showError(context.getSender());
         }
         return true;
         
     }
     
-    public List<String> complete(T context) {
+    @SuppressWarnings("unchecked")
+    public final List<String> complete(T context) {
+        
+        try {
+            List<String> possible = new ArrayList<>();
+    
+            if (context.getCurrent() == null) {
+                return (List<String>)context.currentPossibleCompletions();
+            }
+            
+            if (tabExecutor != null) {
+                tabExecutor.complete(context);
+                
+                for (String completion : (List<String>)context.currentPossibleCompletions()) {
+                    if (completion.toLowerCase().startsWith(context.getCurrent())) {
+                        possible.add(completion);
+                    }
+                }
+                return possible;
+                
+            }
+        } catch (BCIException e) {
+            e.showError(context.getSender());
+        }
         return null;
     }
 

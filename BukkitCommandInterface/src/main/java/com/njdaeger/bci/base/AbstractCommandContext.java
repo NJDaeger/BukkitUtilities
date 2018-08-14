@@ -121,6 +121,10 @@ public abstract class AbstractCommandContext {
         return !isLength(0);
     }
     
+    public boolean hasArgAt(int index) {
+        return argAt(index) != null;
+    }
+    
     public String argAt(int index) {
         if (index < 0 || index >= args.length) return null;
         else return args[index];

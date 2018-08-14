@@ -1,6 +1,7 @@
 package com.njdaeger.bci.base;
 
 import com.njdaeger.bci.SenderType;
+import com.njdaeger.bci.Utils;
 import com.njdaeger.bci.base.executors.TabExecutor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -101,6 +102,22 @@ public abstract class AbstractTabContext<C extends AbstractCommandContext, T ext
     
     public boolean hasArgs() {
         return getLength() > 0;
+    }
+    
+    public void send(String message) {
+        getSender().sendMessage(message);
+    }
+    
+    public void send(String message, Object... placeholders) {
+        send(Utils.formatString(message, placeholders));
+    }
+    
+    public void pluginMessage(String message) {
+        send(commandContext.getPluginMessagePrefix() + " " + message);
+    }
+    
+    public void pluginMessage(String message, Object... placeholders) {
+        pluginMessage(Utils.formatString(message, placeholders));
     }
     
     public void playerCompletion() {
