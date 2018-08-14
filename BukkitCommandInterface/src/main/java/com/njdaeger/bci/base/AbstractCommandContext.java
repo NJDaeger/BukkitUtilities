@@ -1,5 +1,10 @@
 package com.njdaeger.bci.base;
 
+import com.njdaeger.bci.Utils;
+import com.njdaeger.bci.exceptions.InvalidSenderException;
+import com.njdaeger.bci.exceptions.NotEnoughArgsException;
+import com.njdaeger.bci.exceptions.PermissionDeniedException;
+import com.njdaeger.bci.exceptions.TooManyArgsException;
 import org.bukkit.Location;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
@@ -12,14 +17,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-public abstract class CommandContext {
+public abstract class AbstractCommandContext {
     
     protected final CommandSender sender;
     protected final Plugin plugin;
     protected final String[] args;
     protected final String alias;
     
-    public CommandContext(Plugin plugin, CommandSender sender, String[] args, String alias) {
+    public AbstractCommandContext(Plugin plugin, CommandSender sender, String[] args, String alias) {
         this.plugin = plugin;
         this.sender = sender;
         this.alias = alias;
@@ -140,13 +145,47 @@ public abstract class CommandContext {
     }
     
     public void send(String message, Object... placeholders) {
-    
+        send(Utils.formatString(message, placeholders));
     }
     
     public void pluginMessage(String message) {
         send(getPluginMessagePrefix() + " " + message);
     }
     
+    public void pluginMessage(String message, Object... placeholders) {
+        pluginMessage(Utils.formatString(message, placeholders));
+    }
     
+    public void noPermission() throws BCIException {
+        throw new PermissionDeniedException();
+    }
+    
+    public void noPermission(String message) throws BCIException {
+        throw new PermissionDeniedException(message);
+    }
+    
+    public void tooManyArgs() throws BCIException {
+        throw new TooManyArgsException();
+    }
+    
+    public void tooManyArgs(String message) throws BCIException {
+        throw new TooManyArgsException(message);
+    }
+    
+    public void notEnoughArgs() throws BCIException {
+        throw new NotEnoughArgsException();
+    }
+    
+    public void notEnoughArgs(String message) throws BCIException {
+        throw new NotEnoughArgsException(message);
+    }
+    
+    public void invalidSender() throws BCIException {
+        throw new InvalidSenderException();
+    }
+    
+    public void invalidSender(String message) throws BCIException {
+        throw new InvalidSenderException(message);
+    }
     
 }

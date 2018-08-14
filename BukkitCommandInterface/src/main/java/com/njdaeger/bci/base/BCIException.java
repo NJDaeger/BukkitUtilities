@@ -1,8 +1,8 @@
-package com.njdaeger.bci.exceptions;
+package com.njdaeger.bci.base;
 
 import org.bukkit.command.CommandSender;
 
-public class BCIException extends RuntimeException {
+public class BCIException extends Exception {
     
     private String message;
     
@@ -11,7 +11,7 @@ public class BCIException extends RuntimeException {
         this.message = message;
     }
 
-    void setSender(CommandSender sender) {
+    void showError(CommandSender sender) {
         sender.sendMessage(message);
     }
     
