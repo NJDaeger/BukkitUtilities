@@ -2,8 +2,24 @@ package com.njdaeger.bci.arguments;
 
 import com.njdaeger.bci.exceptions.ArgumentParseException;
 
-public abstract class Argument<T> {
+public abstract class AbstractArgument<T> {
 
+    private final String name;
+    private boolean optional;
+    
+    public AbstractArgument(String name, boolean optional) {
+        this.name = name;
+        this.optional = optional;
+    }
+    
+    public AbstractArgument(String name) {
+        this(name, true);
+    }
+    
+    public AbstractArgument() {
+        this(null);
+    }
+    
     /*
     
     Arguments are going to be able to be dynamic. In other words, the user should be
@@ -25,8 +41,16 @@ public abstract class Argument<T> {
                 boolean -> integer -> string
                 string -> integer -> string
         
+        - /command <boolean|integer> <string|integer>
+            tracks:
+                boolean -> string
+                boolean -> integer
+                integer -> string
+                integer -> integer
+        
     ComplexArgumentPart     The argument index has multiple possible argument types- one or more of those types having different following possible arguments
         - /command <boolean|string> <boolean:<string> string:<integer>> <integer:<string>>
+                    |  variable  |   |           complex             |   |   complex    |
             tracks:
                 boolean -> string
                 string -> integer -> string
@@ -38,5 +62,15 @@ public abstract class Argument<T> {
      */
     
     public abstract T parse(String input) throws ArgumentParseException;
+    
+    public abstract Class<T> getType();
+    
+    public String getName() {
+        return name == null ? getType().getSimpleName() : name;
+    }
+    
+    public boolean isOptional() {
+        return optional;
+    }
     
 }

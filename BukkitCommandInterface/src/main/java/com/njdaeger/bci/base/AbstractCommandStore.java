@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public abstract class AbstractCommandStore<C extends AbstractCommandContext, T extends AbstractTabContext, W extends AbstractCommandWrapper<C, T>> {
+public abstract class AbstractCommandStore<C extends AbstractCommandContext<C, T>, T extends AbstractTabContext<C, T>, W extends AbstractCommandWrapper<C, T>> {
     
     protected final Plugin plugin;
     private CommandMap bukkitCommandMap = null;

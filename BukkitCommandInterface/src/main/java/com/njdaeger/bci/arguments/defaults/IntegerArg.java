@@ -1,9 +1,9 @@
 package com.njdaeger.bci.arguments.defaults;
 
-import com.njdaeger.bci.arguments.Argument;
+import com.njdaeger.bci.arguments.AbstractArgument;
 import com.njdaeger.bci.exceptions.ArgumentParseException;
 
-public final class IntegerArg extends Argument<Integer> {
+public final class IntegerArg extends AbstractArgument<Integer> {
     
     @Override
     public Integer parse(String input) throws ArgumentParseException {

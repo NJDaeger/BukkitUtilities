@@ -6,7 +6,7 @@ import com.njdaeger.bci.base.executors.TabExecutor;
 
 import java.util.Set;
 
-public abstract class AbstractCommandBuilder<C extends AbstractCommandContext, T extends AbstractTabContext, B extends AbstractCommandBuilder> {
+public abstract class AbstractCommandBuilder<C extends AbstractCommandContext<C, T>, T extends AbstractTabContext<C, T>, B extends AbstractCommandBuilder<C, T, B>> {
     
     private BCICommand<C, T> command;
     

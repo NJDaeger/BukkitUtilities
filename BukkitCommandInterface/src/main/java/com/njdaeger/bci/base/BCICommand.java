@@ -1,6 +1,8 @@
 package com.njdaeger.bci.base;
 
 import com.njdaeger.bci.SenderType;
+import com.njdaeger.bci.arguments.ArgumentMap;
+import com.njdaeger.bci.arguments.ArgumentTrack;
 import com.njdaeger.bci.base.executors.CommandExecutor;
 import com.njdaeger.bci.base.executors.TabExecutor;
 
@@ -9,22 +11,39 @@ import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
-public final class BCICommand<C extends AbstractCommandContext, T extends AbstractTabContext> {
+public final class BCICommand<C extends AbstractCommandContext<C, T>, T extends AbstractTabContext<C, T>> {
     
     private final String name;
     
-    private int maxArgs;
-    private int minArgs;
-    private String usage;
-    private String[] aliases;
-    private String description;
-    private String[] permissions;
-    private SenderType[] senderTypes;
-    private TabExecutor<T> tabExecutor;
-    private CommandExecutor<C> commandExecutor;
+    private int maxArgs = -1;
+    private int minArgs = -1;
+    private String usage = "";
+    private String[] aliases = new String[0];
+    private String description = "";
+    private String[] permissions = null;
+    private SenderType[] senderTypes = null;
+    private TabExecutor<T> tabExecutor = null;
+    private CommandExecutor<C> commandExecutor = null;
+    private final ArgumentMap<C, T> argumentMap = new ArgumentMap<>(this);
     
     public BCICommand(String name) {
         this.name = name;
+    }
+    
+    public ArgumentMap<C, T> getArgumentMap() {
+        return argumentMap;
+    }
+    
+    public ArgumentTrack getArgumentTrack(int index) {
+        return argumentMap.getArgumentTrack(index);
+    }
+    
+    public void addArgumentTrack(ArgumentTrack argumentTrack) {
+        argumentMap.addArgumentTrack(argumentTrack);
+    }
+    
+    public void removeArgumentTrack(ArgumentTrack argumentTrack) {
+        argumentMap.removeArgumentTrack(argumentTrack);
     }
     
     public void setCommandExecutor(CommandExecutor<C> commandExecutor) {
@@ -134,21 +153,20 @@ public final class BCICommand<C extends AbstractCommandContext, T extends Abstra
         return true;
         
     }
-    
-    @SuppressWarnings("unchecked")
+
     public final List<String> complete(T context) {
         
         try {
             List<String> possible = new ArrayList<>();
     
             if (context.getCurrent() == null) {
-                return (List<String>)context.currentPossibleCompletions();
+                return context.currentPossibleCompletions();
             }
             
             if (tabExecutor != null) {
                 tabExecutor.complete(context);
                 
-                for (String completion : (List<String>)context.currentPossibleCompletions()) {
+                for (String completion : context.currentPossibleCompletions()) {
                     if (completion.toLowerCase().startsWith(context.getCurrent())) {
                         possible.add(completion);
                     }

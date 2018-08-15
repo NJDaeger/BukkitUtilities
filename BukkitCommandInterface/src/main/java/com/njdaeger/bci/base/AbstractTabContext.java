@@ -14,18 +14,18 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public abstract class AbstractTabContext<C extends AbstractCommandContext, T extends AbstractTabContext> {
+public abstract class AbstractTabContext<C extends AbstractCommandContext<C, T>, T extends AbstractTabContext<C, T>> {
     
     private final List<String> possible;
     private final BCICommand<C, T> command;
     private final C commandContext;
     private final String[] args;
     
-    public AbstractTabContext(C commandContext, BCICommand<C, T> command) {
-        this.possible = new ArrayList<>();
+    public AbstractTabContext(C commandContext) {
+        this.command = commandContext.command;
         this.commandContext = commandContext;
+        this.possible = new ArrayList<>();
         this.args = commandContext.args;
-        this.command = command;
     }
     
     public boolean hasPermission(String permission) {

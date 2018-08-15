@@ -1,14 +1,15 @@
 package com.njdaeger.bci.defaults;
 
 import com.njdaeger.bci.base.AbstractCommandContext;
+import com.njdaeger.bci.base.BCICommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
-public class CommandContext extends AbstractCommandContext {
+public class CommandContext extends AbstractCommandContext<CommandContext, TabContext> {
     
-    public CommandContext(Plugin plugin, CommandSender sender, String[] args, String alias) {
-        super(plugin, sender, args, alias);
+    public CommandContext(Plugin plugin, BCICommand<CommandContext, TabContext> command, CommandSender sender, String[] args, String alias) {
+        super(plugin, command, sender, args, alias);
     }
     
     @Override

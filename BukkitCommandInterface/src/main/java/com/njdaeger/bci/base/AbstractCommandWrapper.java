@@ -9,7 +9,7 @@ import org.bukkit.plugin.Plugin;
 import java.util.List;
 import java.util.stream.Stream;
 
-public abstract class AbstractCommandWrapper<C extends AbstractCommandContext, T extends AbstractTabContext> extends Command implements PluginIdentifiableCommand {
+public abstract class AbstractCommandWrapper<C extends AbstractCommandContext<C, T>, T extends AbstractTabContext<C, T>> extends Command implements PluginIdentifiableCommand {
     
     protected final BCICommand<C, T> command;
     private final String[] permissions;

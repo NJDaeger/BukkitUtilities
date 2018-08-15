@@ -1,15 +1,16 @@
 package com.njdaeger.bci.exceptions;
 
-import com.njdaeger.bci.arguments.Argument;
+import com.njdaeger.bci.base.BCIException;
+import org.bukkit.ChatColor;
 
-public class ArgumentParseException extends Exception {
+public class ArgumentParseException extends BCIException {
     
     public ArgumentParseException(String message) {
         super(message);
     }
     
     public ArgumentParseException() {
-        this("Could not parse argument.");
+        this(ChatColor.RED + "Could not parse argument.");
     }
     
 }
