@@ -5,7 +5,16 @@ import com.njdaeger.bci.arguments.AbstractArgumentPart;
 
 public class StaticArgumentPart extends AbstractArgumentPart {
     
-    public StaticArgumentPart(boolean optional, AbstractArgument<?>... arguments) {
-        super(optional, arguments);
+    private StaticArgumentPart(AbstractArgument<?>... arguments) {
+        super(arguments);
     }
+    
+    public StaticArgumentPart(AbstractArgument<?> argument) {
+        super(argument);
+    }
+    
+    public AbstractArgument getArgument() {
+        return getArguments()[0];
+    }
+    
 }

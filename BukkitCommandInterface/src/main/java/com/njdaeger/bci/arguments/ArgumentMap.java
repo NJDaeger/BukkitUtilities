@@ -6,47 +6,61 @@ import com.njdaeger.bci.base.BCICommand;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public final class ArgumentMap<C extends AbstractCommandContext<C, T>, T extends AbstractTabContext<C, T>> implements Iterable<ArgumentTrack> {
     
-    private final Map<Integer, ArgumentTrack> argumentTracks;
-    private final BCICommand<C, T> command;
+    private final Map<Integer, ArgumentTrack> argumentMap;
+    private BCICommand<C, T> command;
     
-    public ArgumentMap(BCICommand<C, T> command) {
-        this.argumentTracks = new HashMap<>();
+    ArgumentMap(BCICommand<C, T> command, List<ArgumentTrack> argumentTracks) {
+        this.argumentMap = new HashMap<>();
         this.command = command;
+        
+        for (int i = 0; i < argumentTracks.size(); i++) {
+            argumentMap.put(i, argumentTracks.get(i));
+        }
     }
     
     public BCICommand<C, T> getCommand() {
         return command;
     }
     
+    public void setCommand(BCICommand<C, T> command) {
+        this.command = command;
+        command.setArgumentMap(this);
+    }
+    
     public void addArgumentTrack(ArgumentTrack argumentTrack) {
-        argumentTracks.put(argumentTracks.size(), argumentTrack);
+        argumentMap.put(argumentMap.size(), argumentTrack);
     }
     
     public void removeArgumentTrack(int index) {
-        argumentTracks.remove(index);
+        argumentMap.remove(index);
     }
     
     public void removeArgumentTrack(ArgumentTrack argumentTrack) {
-        if (argumentTracks.containsValue(argumentTrack)) {
-            for (int i = 0; i < argumentTracks.size(); i++) {
-                if (argumentTracks.get(i).equals(argumentTrack)) {
-                    argumentTracks.remove(i);
+        if (argumentMap.containsValue(argumentTrack)) {
+            for (int i = 0; i < argumentMap.size(); i++) {
+                if (argumentMap.get(i).equals(argumentTrack)) {
+                    argumentMap.remove(i);
                     break;
                 }
             }
         }
     }
     
+    public boolean isEmpty() {
+        return argumentMap.isEmpty();
+    }
+    
     public ArgumentTrack getArgumentTrack(int index) {
-        return argumentTracks.get(index);
+        return argumentMap.get(index);
     }
     
     @Override
     public Iterator<ArgumentTrack> iterator() {
-        return argumentTracks.values().iterator();
+        return argumentMap.values().iterator();
     }
 }

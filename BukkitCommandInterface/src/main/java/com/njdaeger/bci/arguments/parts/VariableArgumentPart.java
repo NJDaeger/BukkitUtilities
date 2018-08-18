@@ -5,7 +5,8 @@ import com.njdaeger.bci.arguments.AbstractArgumentPart;
 
 public class VariableArgumentPart extends AbstractArgumentPart {
     
-    public VariableArgumentPart(boolean optional, AbstractArgument<?>... arguments) {
-        super(optional, arguments);
+    public VariableArgumentPart(AbstractArgument<?>... arguments) {
+        super(arguments);
     }
+    
 }

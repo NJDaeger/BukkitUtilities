@@ -11,8 +11,8 @@ public final class BooleanArg extends AbstractArgument<Boolean> {
     
     @Override
     public Boolean parse(String input) throws ArgumentParseException {
-        if (!input.equalsIgnoreCase("true") && !input.equalsIgnoreCase("false")) throw new ArgumentParseException("Boolean argument unable to be parsed. Input: " + input);
-        return null;
+        if (input == null || (!input.equalsIgnoreCase("true") && !input.equalsIgnoreCase("false"))) throw new ArgumentParseException("Boolean argument unable to be parsed. Input: " + input);
+        return input.equalsIgnoreCase("true");
     }
     
     @Override

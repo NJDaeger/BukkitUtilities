@@ -1,17 +1,29 @@
 package com.njdaeger.bci.base;
 
 import com.njdaeger.bci.SenderType;
+import com.njdaeger.bci.arguments.ArgumentBuilder;
+import com.njdaeger.bci.arguments.ArgumentMap;
 import com.njdaeger.bci.base.executors.CommandExecutor;
 import com.njdaeger.bci.base.executors.TabExecutor;
 
 import java.util.Set;
 
+@SuppressWarnings("unchecked")
 public abstract class AbstractCommandBuilder<C extends AbstractCommandContext<C, T>, T extends AbstractTabContext<C, T>, B extends AbstractCommandBuilder<C, T, B>> {
     
     private BCICommand<C, T> command;
     
     public AbstractCommandBuilder(String name) {
         this.command = new BCICommand<>(name);
+    }
+    
+    public B arguments(ArgumentMap<C, T> argumentMap) {
+        command.setArgumentMap(argumentMap);
+        return (B)this;
+    }
+    
+    public ArgumentBuilder<C, T, B> argumentBuilder() {
+        return ArgumentBuilder.builder(this);
     }
     
     public B executor(CommandExecutor<C> executor) {

@@ -1,7 +1,9 @@
 package com.njdaeger.bci.base;
 
 import com.njdaeger.bci.SenderType;
+import com.njdaeger.bci.arguments.ArgumentBuilder;
 import com.njdaeger.bci.arguments.ArgumentMap;
+import com.njdaeger.bci.arguments.ArgumentParser;
 import com.njdaeger.bci.arguments.ArgumentTrack;
 import com.njdaeger.bci.base.executors.CommandExecutor;
 import com.njdaeger.bci.base.executors.TabExecutor;
@@ -24,10 +26,15 @@ public final class BCICommand<C extends AbstractCommandContext<C, T>, T extends 
     private SenderType[] senderTypes = null;
     private TabExecutor<T> tabExecutor = null;
     private CommandExecutor<C> commandExecutor = null;
-    private final ArgumentMap<C, T> argumentMap = new ArgumentMap<>(this);
+    @SuppressWarnings("unchecked")
+    private ArgumentMap<C, T> argumentMap = (ArgumentMap<C, T>)ArgumentBuilder.builder().buildEmptyMap();
     
     public BCICommand(String name) {
         this.name = name;
+    }
+    
+    public void setArgumentMap(ArgumentMap<C, T> argumentMap) {
+        this.argumentMap = argumentMap;
     }
     
     public ArgumentMap<C, T> getArgumentMap() {
@@ -129,6 +136,9 @@ public final class BCICommand<C extends AbstractCommandContext<C, T>, T extends 
     public final boolean execute(C context) {
         
         try {
+            if (!argumentMap.isEmpty()) {
+                context.setTrack(new ArgumentParser(context).parse());
+            }
             if (senderTypes != null && senderTypes.length != 0) {
                 List<SenderType> types = Arrays.asList(senderTypes);
                 if (!types.contains(SenderType.of(context.getSender()))) context.invalidSender();

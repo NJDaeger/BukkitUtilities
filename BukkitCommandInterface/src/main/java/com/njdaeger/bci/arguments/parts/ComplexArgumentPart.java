@@ -5,7 +5,15 @@ import com.njdaeger.bci.arguments.AbstractArgumentPart;
 
 public class ComplexArgumentPart extends AbstractArgumentPart {
     
-    public <A extends AbstractArgument> ComplexArgumentPart(boolean optional, Class<A> type, AbstractArgument<?>... arguments) {
-        super(optional, arguments);
+    private final Class<?> type;
+    
+    public <A extends AbstractArgument> ComplexArgumentPart(Class<A> type, AbstractArgument<?>... arguments) {
+        super(arguments);
+        this.type = type;
     }
+    
+    public Class<?> getRequiredPrevious() {
+        return type;
+    }
+    
 }

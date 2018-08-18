@@ -5,6 +5,10 @@ import com.njdaeger.bci.exceptions.ArgumentParseException;
 
 public final class IntegerArg extends AbstractArgument<Integer> {
     
+    public IntegerArg(String name) {
+        super(name);
+    }
+    
     @Override
     public Integer parse(String input) throws ArgumentParseException {
         int parsed;
@@ -14,5 +18,10 @@ public final class IntegerArg extends AbstractArgument<Integer> {
             throw new ArgumentParseException("Integer argument unable to be parsed. Input: " + input);
         }
         return parsed;
+    }
+    
+    @Override
+    public Class<Integer> getType() {
+        return Integer.class;
     }
 }

@@ -2,9 +2,7 @@ package com.njdaeger.bci.base;
 
 import com.njdaeger.bci.Utils;
 import com.njdaeger.bci.arguments.ArgumentMap;
-import com.njdaeger.bci.arguments.ArgumentParser;
 import com.njdaeger.bci.arguments.ArgumentTrack;
-import com.njdaeger.bci.exceptions.ArgumentParseException;
 import com.njdaeger.bci.exceptions.InvalidSenderException;
 import com.njdaeger.bci.exceptions.NotEnoughArgsException;
 import com.njdaeger.bci.exceptions.PermissionDeniedException;
@@ -26,6 +24,7 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
     
     protected final BCICommand<C, T> command;
     protected final CommandSender sender;
+    private ArgumentTrack argumentTrack;
     protected final Plugin plugin;
     protected final String[] args;
     protected final String alias;
@@ -44,8 +43,12 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
         return command.getArgumentMap();
     }
     
-    public ArgumentTrack getArgumentTrack(int index) throws ArgumentParseException {
-        return new ArgumentParser(this).parse();
+    public ArgumentTrack getTrack() {
+        return argumentTrack;
+    }
+    
+    void setTrack(ArgumentTrack track) {
+        this.argumentTrack = track;
     }
     
     public BCICommand<C, T> getCommand() {

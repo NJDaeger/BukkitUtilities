@@ -15,10 +15,11 @@ public final class ArgumentParser {
         this.args = command.getArgs().toArray(new String[0]);
     }
     
+    //this may not make sense rn, but when flags are added in this method will get more complex in order to ignore flags provided to get straight arguments from the command.
     public ArgumentTrack parse() throws ArgumentParseException {
         for (ArgumentTrack track : command.getArgumentMap()) {
             try {
-                track.parse(command.getArgs().toArray(new String[0]));
+                track.parse(args);
             }
             catch (ArgumentParseException ignore) {
                 continue;
