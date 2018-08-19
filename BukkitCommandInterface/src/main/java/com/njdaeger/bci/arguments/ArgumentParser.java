@@ -4,22 +4,21 @@ import com.njdaeger.bci.base.AbstractCommandContext;
 import com.njdaeger.bci.exceptions.ArgumentParseException;
 import org.bukkit.ChatColor;
 
-//This class should be used to determine which argument track was used in the command. If none was found throw an argument parse exception
 public final class ArgumentParser {
     
-    private final AbstractCommandContext<?, ?> command;
-    private final String[] args;
+    private ArgumentParser() {}
     
-    public ArgumentParser(AbstractCommandContext<?, ?> command) {
-        this.command = command;
-        this.args = command.getArgs().toArray(new String[0]);
-    }
     
-    //this may not make sense rn, but when flags are added in this method will get more complex in order to ignore flags provided to get straight arguments from the command.
-    public ArgumentTrack parse() throws ArgumentParseException {
+    /**
+     * Parse the given command context to check for ArgumentTracks
+     * @param command The command context to parse
+     * @return The ArgumentTrack corresponding to the given arguments.
+     * @throws ArgumentParseException If no ArgumentTrack was found
+     */
+    public ArgumentTrack parse(AbstractCommandContext<?, ?> command) throws ArgumentParseException {
         for (ArgumentTrack track : command.getArgumentMap()) {
             try {
-                track.parse(args);
+                track.parse(command.getArgs().toArray(new String[0]));
             }
             catch (ArgumentParseException ignore) {
                 continue;

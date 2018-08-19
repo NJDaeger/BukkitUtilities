@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+@SuppressWarnings("unused")
 public final class ArgumentBuilder<C extends AbstractCommandContext<C, T>, T extends AbstractTabContext<C, T>, B extends AbstractCommandBuilder<C, T, B>> {
     
     private final Map<Integer, List<AbstractArgumentPart>> indexMap;
@@ -32,23 +33,56 @@ public final class ArgumentBuilder<C extends AbstractCommandContext<C, T>, T ext
         this.commandBuilder = command;
     }
     
+    /**
+     * Create a new instance of the ArgumentBuilder
+     * @param commandContext Class of the current CommandContext
+     * @param tabContext Class of the current TabContext
+     * @param commandBuilder Class of the current CommandBuilder
+     * @param <C> Command Context
+     * @param <T> Tab Context
+     * @param <B> Command Builder
+     */
     public static <C extends AbstractCommandContext<C, T>, T extends AbstractTabContext<C, T>, B extends AbstractCommandBuilder<C, T, B>> ArgumentBuilder<C, T, B> builder(Class<C> commandContext, Class<T> tabContext, Class<B> commandBuilder) {
         return new ArgumentBuilder<>();
     }
     
+    /**
+     * Create a new instance of the ArgumentBuilder
+     * @param command The command which is currently being created.
+     * @param <C> Command Context
+     * @param <T> Tab Context
+     * @param <B> Command Builder
+     */
     public static <C extends AbstractCommandContext<C, T>, T extends AbstractTabContext<C, T>, B extends AbstractCommandBuilder<C, T, B>> ArgumentBuilder<C, T, B> builder(AbstractCommandBuilder<C, T, B> command) {
         return new ArgumentBuilder<>(command);
     }
     
+    /**
+     * Create a new instance of the ArgumentBuilder with no specific Contexts/builder
+     */
     public static ArgumentBuilder<?, ?, ?> builder() {
         return new ArgumentBuilder<>();
     }
     
+    /**
+     * Set the current index the arguments should currently be getting put
+     * at. This does not need to be used for the first argument, as the default
+     * for this is 0. For following arguments, though, this needs to be set to
+     * the desired index.
+     * @param index The current index
+     */
     public ArgumentBuilder<C, T, B> index(int index) {
         this.currentIndex = index;
         return this;
     }
     
+    /**
+     * Add an argument to the current index of this argument. If one argument is
+     * added, it will be a StaticArgumentPart, if more than one is added it will
+     * be a VariableArgumentPart. This can be called more than once at a given
+     * index to add more arguments.
+     * @param arguments The array of arguments to add to the index.
+     */
     public ArgumentBuilder<C, T, B> arguments(AbstractArgument<?>... arguments) {
         if (!indexMap.containsKey(currentIndex))
             indexMap.put(currentIndex, new ArrayList<>());
@@ -59,10 +93,19 @@ public final class ArgumentBuilder<C extends AbstractCommandContext<C, T>, T ext
         return this;
     }
     
+    /**
+     * Add an argument to the current index of this argument only if the argument
+     * at the previous index is the same type as the type provided. NOTE: If this
+     * is called when the currentIndex == 0, an ArgumentTrackException will be
+     * thrown.
+     * @param type The previous argument type required
+     * @param arguments The arguments to add
+     * @param <A> The required argument type
+     */
     public <A extends AbstractArgument> ArgumentBuilder<C, T, B> argumentsAfter(Class<A> type, AbstractArgument<?>... arguments) {
         if (currentIndex == 0)
             try {
-                throw new ArgumentTrackException();
+                throw new ArgumentTrackException("argumentAfter cannot be called when the currentIndex is 0");
             }
             catch (ArgumentTrackException e) {
                 e.printStackTrace();
@@ -73,6 +116,10 @@ public final class ArgumentBuilder<C extends AbstractCommandContext<C, T>, T ext
         return this;
     }
     
+    /**
+     * Builds this ArgumentBuider into a CommandBuilder
+     * @return The CommandBuilder being used.
+     */
     public B build() {
         if (commandBuilder == null) throw new NullPointerException("ArgumentBuilder#build can only be used in the command builder.");
         for (int i = 0; i < indexMap.size(); i++) {
@@ -82,6 +129,10 @@ public final class ArgumentBuilder<C extends AbstractCommandContext<C, T>, T ext
         return commandBuilder.arguments(new ArgumentMap<>(commandBuilder.build(), tracks));
     }
     
+    /**
+     * Builds this ArgumentBuilder into an ArgumentMap
+     * @return A new ArgumentMap with no attached command.
+     */
     public ArgumentMap<C, T> buildToMap() {
         for (int i = 0; i < indexMap.size(); i++) {
             int finalI = i;
@@ -90,10 +141,15 @@ public final class ArgumentBuilder<C extends AbstractCommandContext<C, T>, T ext
         return new ArgumentMap<>(null, tracks);
     }
     
+    /**
+     * Builds this ArgumentBuilder into an empty ArgumentMap
+     * @return A new ArgumentMap with no attached command and no defined arguments.
+     */
     public ArgumentMap<C, T> buildEmptyMap() {
         return new ArgumentMap<>(null, new ArrayList<>());
     }
     
+    //Constructs an argument track for the given argument part.
     private void constructTrack(AbstractArgumentPart part, int index) {
         
         if (index == 0) {
