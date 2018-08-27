@@ -38,7 +38,7 @@ public final class Parser {
             Matcher matcher = flag.getPattern().matcher(argumentString);
             if (!matcher.find()) continue;
             argumentString = matcher.replaceFirst("");
-            if (flag.hasFollowingValue()) currentFlags.add(new LiveFlag(flag, matcher.group(1)));
+            if (flag.hasFollowingValue()) currentFlags.add(new LiveFlag(flag, matcher.group()));
             else currentFlags.add(new LiveFlag(flag, flag.getRawFlag()));
         }
         command.setFlags(currentFlags);

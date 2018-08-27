@@ -180,7 +180,6 @@ public final class BCICommand<C extends AbstractCommandContext<C, T>, T extends 
             if (hasFlags()) {
                 args = Parser.parseFlags(context);
             }
-            System.out.println(args);
             if (!argumentMap.isEmpty()) {
                 context.setTrack(Parser.parseTrack(args, argumentMap));
             }

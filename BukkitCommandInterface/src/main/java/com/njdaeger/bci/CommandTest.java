@@ -49,7 +49,6 @@ public class CommandTest {
         }
         if (context.hasFlag('o')) context.send("has flag");
         if (context.hasFlag('i')) context.send(String.valueOf(context.getFlag('i').getInteger()));
-        context.getArgumentMap().forEach(System.out::println);
         context.send("CURRENT: " + context.getTrack().toString());
         
         context.send("" + context.getTrack().nextBoolean());

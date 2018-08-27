@@ -25,9 +25,8 @@ public final class LiveFlag {
         if (flag.isSplitFlag()) {
             return separatedFlag.split(String.valueOf(flag.getSplitter()))[1];
         }
-        else {
-            return separatedFlag.split(" ")[1];
-        }
+        else if (flag.hasFollowingValue()) return separatedFlag.split(" ")[1];
+        else return flag.getRawFlag();
     }
     
     public Boolean getBoolean() throws ArgumentParseException {
