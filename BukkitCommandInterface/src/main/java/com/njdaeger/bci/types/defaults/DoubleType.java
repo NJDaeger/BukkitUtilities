@@ -1,11 +1,15 @@
-package com.njdaeger.bci.arguments.defaults;
+package com.njdaeger.bci.types.defaults;
 
-import com.njdaeger.bci.arguments.AbstractArgument;
 import com.njdaeger.bci.exceptions.ArgumentParseException;
+import com.njdaeger.bci.types.ParsedType;
 
-public final class DoubleArg extends AbstractArgument<Double> {
+public final class DoubleType extends ParsedType<Double> {
     
-    public DoubleArg(String name) {
+    public DoubleType() {
+        super();
+    }
+    
+    public DoubleType(String name) {
         super(name);
     }
     
@@ -24,4 +28,5 @@ public final class DoubleArg extends AbstractArgument<Double> {
     public Class<Double> getType() {
         return Double.class;
     }
+    
 }

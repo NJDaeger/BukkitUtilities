@@ -1,11 +1,15 @@
-package com.njdaeger.bci.arguments.defaults;
+package com.njdaeger.bci.types.defaults;
 
-import com.njdaeger.bci.arguments.AbstractArgument;
 import com.njdaeger.bci.exceptions.ArgumentParseException;
+import com.njdaeger.bci.types.ParsedType;
 
-public final class IntegerArg extends AbstractArgument<Integer> {
+public final class IntegerType extends ParsedType<Integer> {
     
-    public IntegerArg(String name) {
+    public IntegerType() {
+        super();
+    }
+    
+    public IntegerType(String name) {
         super(name);
     }
     

@@ -1,24 +1,16 @@
-package com.njdaeger.bci.arguments;
+package com.njdaeger.bci.types;
 
 import com.njdaeger.bci.exceptions.ArgumentParseException;
 
-@SuppressWarnings({"unused", "WeakerAccess"})
-public abstract class AbstractArgument<T> {
-
+public abstract class ParsedType<T> {
+    
     private final String name;
     
-    /**
-     * Creates a new argument of this type.
-     * @param name The name of the argument.
-     */
-    public AbstractArgument(String name) {
+    public ParsedType(String name) {
         this.name = name;
     }
     
-    /**
-     * Creates a new argument of this type. This argument will be named via its Generic Type Class simple name.
-     */
-    public AbstractArgument() {
+    public ParsedType() {
         this(null);
     }
     

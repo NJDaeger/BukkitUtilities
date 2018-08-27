@@ -1,11 +1,15 @@
-package com.njdaeger.bci.arguments.defaults;
+package com.njdaeger.bci.types.defaults;
 
-import com.njdaeger.bci.arguments.AbstractArgument;
 import com.njdaeger.bci.exceptions.ArgumentParseException;
+import com.njdaeger.bci.types.ParsedType;
 
-public final class BooleanArg extends AbstractArgument<Boolean> {
+public final class BooleanType extends ParsedType<Boolean> {
     
-    public BooleanArg(String name) {
+    public BooleanType() {
+        super();
+    }
+    
+    public BooleanType(String name) {
         super(name);
     }
     

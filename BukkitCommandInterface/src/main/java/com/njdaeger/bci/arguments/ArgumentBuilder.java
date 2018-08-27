@@ -7,6 +7,7 @@ import com.njdaeger.bci.base.AbstractCommandBuilder;
 import com.njdaeger.bci.base.AbstractCommandContext;
 import com.njdaeger.bci.base.AbstractTabContext;
 import com.njdaeger.bci.exceptions.ArgumentTrackException;
+import com.njdaeger.bci.types.ParsedType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -83,7 +84,7 @@ public final class ArgumentBuilder<C extends AbstractCommandContext<C, T>, T ext
      * index to add more arguments.
      * @param arguments The array of arguments to add to the index.
      */
-    public ArgumentBuilder<C, T, B> arguments(AbstractArgument<?>... arguments) {
+    public ArgumentBuilder<C, T, B> arguments(ParsedType<?>... arguments) {
         if (!indexMap.containsKey(currentIndex))
             indexMap.put(currentIndex, new ArrayList<>());
         if (arguments.length > 1) {
@@ -102,7 +103,7 @@ public final class ArgumentBuilder<C extends AbstractCommandContext<C, T>, T ext
      * @param arguments The arguments to add
      * @param <A> The required argument type
      */
-    public <A extends AbstractArgument> ArgumentBuilder<C, T, B> argumentsAfter(Class<A> type, AbstractArgument<?>... arguments) {
+    public <A extends ParsedType> ArgumentBuilder<C, T, B> argumentsAfter(Class<A> type, ParsedType<?>... arguments) {
         if (currentIndex == 0)
             try {
                 throw new ArgumentTrackException("argumentAfter cannot be called when the currentIndex is 0");
@@ -180,7 +181,7 @@ public final class ArgumentBuilder<C extends AbstractCommandContext<C, T>, T ext
             List<ArgumentTrack> newTracks = new ArrayList<>();
             for (ArgumentTrack track : tracks) {
                 if (track.getArgument(index) == null && track.getArgument(index-1).getClass().equals(((ComplexArgumentPart)part).getRequiredPrevious())) {
-                    for (AbstractArgument<?> arg : part.getArguments()) {
+                    for (ParsedType<?> arg : part.getArguments()) {
                         ArgumentTrack newTrack = new ArgumentTrack(track.argsBetween(index));
                         newTrack.addArgument(arg);
                         newTracks.add(newTrack);
