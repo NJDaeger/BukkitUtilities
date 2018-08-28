@@ -5,7 +5,7 @@ import com.njdaeger.bci.arguments.ArgumentBuilder;
 import com.njdaeger.bci.arguments.ArgumentMap;
 import com.njdaeger.bci.base.executors.CommandExecutor;
 import com.njdaeger.bci.base.executors.TabExecutor;
-import com.njdaeger.bci.flags.Flag;
+import com.njdaeger.bci.flags.AbstractFlag;
 
 import java.util.Set;
 
@@ -22,7 +22,7 @@ public abstract class AbstractCommandBuilder<C extends AbstractCommandContext<C,
         this.command = new BCICommand<>(name);
     }
     
-    public B flag(Flag<?> flag) {
+    public B flag(AbstractFlag<?> flag) {
         command.addFlag(flag);
         return (B)this;
     }

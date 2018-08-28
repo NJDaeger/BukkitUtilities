@@ -6,7 +6,7 @@ import com.njdaeger.bci.arguments.ArgumentMap;
 import com.njdaeger.bci.arguments.ArgumentTrack;
 import com.njdaeger.bci.base.executors.CommandExecutor;
 import com.njdaeger.bci.base.executors.TabExecutor;
-import com.njdaeger.bci.flags.Flag;
+import com.njdaeger.bci.flags.AbstractFlag;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +28,7 @@ public final class BCICommand<C extends AbstractCommandContext<C, T>, T extends 
     private SenderType[] senderTypes = null;
     private TabExecutor<T> tabExecutor = null;
     private CommandExecutor<C> commandExecutor = null;
-    private final Map<Character, Flag<?>> flags = new HashMap<>();
+    private final Map<Character, AbstractFlag<?>> flags = new HashMap<>();
     @SuppressWarnings("unchecked")
     private ArgumentMap<C, T> argumentMap = (ArgumentMap<C, T>)ArgumentBuilder.builder().buildEmptyMap();
     
@@ -40,11 +40,11 @@ public final class BCICommand<C extends AbstractCommandContext<C, T>, T extends 
         this.argumentMap = argumentMap;
     }
     
-    public List<Flag<?>> getFlags() {
+    public List<AbstractFlag<?>> getFlags() {
         return new ArrayList<>(flags.values());
     }
     
-    public void addFlag(Flag<?> flag) {
+    public void addFlag(AbstractFlag<?> flag) {
         flags.put(flag.getFlagCharacter(), flag);
     }
     

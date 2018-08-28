@@ -40,7 +40,11 @@ public class CommandTest {
         BCIPlugin.getCommandStore().registerCommand(command);
         
     }
+    /*
     
+    @Flag(OptionalFlag.class, 'c', true)
+    @Flag(CustomFlag.class)
+     */
     public void command(CommandContext context) throws BCIException {
         if (context.hasArgAt(1)) {
             if (context.argAt(1).equalsIgnoreCase("test3")) {

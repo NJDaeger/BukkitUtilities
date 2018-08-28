@@ -4,20 +4,20 @@ import com.njdaeger.bci.exceptions.ArgumentParseException;
 
 public final class LiveFlag {
     
-    private final Flag<?> flag;
+    private final AbstractFlag<?> flag;
     private final String separatedFlag;
     
-    public LiveFlag(Flag<?> flag, String separatedFlag) {
+    public LiveFlag(AbstractFlag<?> flag, String separatedFlag) {
         this.separatedFlag = separatedFlag;
         this.flag = flag;
         
     }
     
-    public Flag<?> getFlag() {
+    public AbstractFlag<?> getFlag() {
         return flag;
     }
     
-    public <T extends Flag> T getFlag(Class<T> flagType) {
+    public <T extends AbstractFlag> T getFlag(Class<T> flagType) {
         return (T)flag;
     }
     

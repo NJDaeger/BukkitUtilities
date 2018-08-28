@@ -4,7 +4,7 @@ import com.njdaeger.bci.arguments.ArgumentMap;
 import com.njdaeger.bci.arguments.ArgumentTrack;
 import com.njdaeger.bci.arguments.LiveTrack;
 import com.njdaeger.bci.exceptions.ArgumentParseException;
-import com.njdaeger.bci.flags.Flag;
+import com.njdaeger.bci.flags.AbstractFlag;
 import com.njdaeger.bci.flags.LiveFlag;
 import org.bukkit.ChatColor;
 
@@ -34,7 +34,7 @@ public final class Parser {
         List<LiveFlag> currentFlags = new ArrayList<>();
         
         String argumentString = command.joinArgs();
-        for (Flag<?> flag : command.getCommand().getFlags()) {
+        for (AbstractFlag<?> flag : command.getCommand().getFlags()) {
             Matcher matcher = flag.getPattern().matcher(argumentString);
             if (!matcher.find()) continue;
             argumentString = matcher.replaceFirst("");
