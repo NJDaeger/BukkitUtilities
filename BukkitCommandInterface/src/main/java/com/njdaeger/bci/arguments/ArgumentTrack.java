@@ -13,6 +13,10 @@ public class ArgumentTrack {
     
     private List<ParsedType<?>> arguments;
     
+    ArgumentTrack() {
+        this.arguments = new ArrayList<>();
+    }
+    
     ArgumentTrack(ParsedType<?>[] arguments) {
         this.arguments = new ArrayList<>(Arrays.asList(arguments));
     }

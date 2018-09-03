@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 @SuppressWarnings("unused")
@@ -152,10 +153,17 @@ public final class ArgumentBuilder<C extends AbstractCommandContext<C, T>, T ext
     
     //Constructs an argument track for the given argument part.
     private void constructTrack(AbstractArgumentPart part, int index) {
-        
+        //this entire thing prolly needs redone to consider optionals
         if (index == 0) {
             if (!(part instanceof ComplexArgumentPart)) {
-                Arrays.asList(part.getArguments()).forEach(arg -> tracks.add(new ArgumentTrack(arg)));
+                AtomicBoolean hasEmpty = new AtomicBoolean(false);
+                Arrays.asList(part.getArguments()).forEach(arg -> {
+                    if (arg.isOptional() && !hasEmpty.get()) {
+                        hasEmpty.set(true);
+                        tracks.add(new ArgumentTrack());
+                    }
+                    tracks.add(new ArgumentTrack(arg));
+                });
                 return;
             } else
                 try {
@@ -167,15 +175,30 @@ public final class ArgumentBuilder<C extends AbstractCommandContext<C, T>, T ext
         }
         
         if (part instanceof StaticArgumentPart) {
+            List<ArgumentTrack> newTracks = new ArrayList<>();
             for (ArgumentTrack track : tracks) {
-                if (track.getArgument(index) == null) track.addArgument(((StaticArgumentPart)part).getArgument());
+                if (track.getArguments().size() == 0) continue;
+                if (track.getArgument(index) == null) {
+                    if (((StaticArgumentPart)part).getArgument().isOptional()) {
+                        newTracks.add(new ArgumentTrack(track.argsBetween(track.getSize())));
+                    }
+                    track.addArgument(((StaticArgumentPart)part).getArgument());
+                }
             }
+            tracks.addAll(newTracks);
         }
         
         if (part instanceof VariableArgumentPart) {
+            List<ArgumentTrack> newTracks = new ArrayList<>();
             for (ArgumentTrack track : tracks) {
-                if (track.getArgument(index) == null) Stream.of(part.getArguments()).forEach(track::addArgument);
+                if (track.getArgument(index) == null) Stream.of(part.getArguments()).forEach(arg -> {
+                    if (arg.isOptional()) {
+                        newTracks.add(new ArgumentTrack(track.argsBetween(track.getSize())));
+                    }
+                    track.addArgument(arg);
+                });
             }
+            tracks.addAll(newTracks);
         }
         if (part instanceof ComplexArgumentPart) {
             List<ArgumentTrack> newTracks = new ArrayList<>();

@@ -6,11 +6,15 @@ import com.njdaeger.bci.types.ParsedType;
 public final class BooleanType extends ParsedType<Boolean> {
     
     public BooleanType() {
-        super();
+        this(null);
     }
     
     public BooleanType(String name) {
-        super(name);
+        this(name, false);
+    }
+    
+    public BooleanType(String name, boolean optional) {
+        super(name, optional);
     }
     
     @Override

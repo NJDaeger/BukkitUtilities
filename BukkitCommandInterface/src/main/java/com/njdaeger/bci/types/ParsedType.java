@@ -5,9 +5,15 @@ import com.njdaeger.bci.exceptions.ArgumentParseException;
 public abstract class ParsedType<T> {
     
     private final String name;
+    private final boolean optional;
+    
+    public ParsedType(String name, boolean optional) {
+        this.name = name;
+        this.optional = optional;
+    }
     
     public ParsedType(String name) {
-        this.name = name;
+        this(name, true);
     }
     
     public ParsedType() {
@@ -34,6 +40,14 @@ public abstract class ParsedType<T> {
      */
     public String getName() {
         return name == null ? getType().getSimpleName() : name;
+    }
+    
+    /**
+     * Whether this argument was optional or not.
+     * @return Whether this argument is optional
+     */
+    public boolean isOptional() {
+        return optional;
     }
     
 }
