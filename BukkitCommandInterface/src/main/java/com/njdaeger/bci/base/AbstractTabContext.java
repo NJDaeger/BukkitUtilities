@@ -14,6 +14,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+@SuppressWarnings({"unchecked", "unused", "WeakerAccess"})
 public abstract class AbstractTabContext<C extends AbstractCommandContext<C, T>, T extends AbstractTabContext<C, T>> {
     
     private final List<String> possible;

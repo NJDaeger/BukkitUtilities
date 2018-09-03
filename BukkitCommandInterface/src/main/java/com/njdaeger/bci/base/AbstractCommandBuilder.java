@@ -28,23 +28,6 @@ public abstract class AbstractCommandBuilder<C extends AbstractCommandContext<C,
     }
     
     /**
-     * Specifies the ArgumentMap to be used for this command.
-     * @param argumentMap The command ArgumentMap
-     */
-    public B arguments(ArgumentMap<C, T> argumentMap) {
-        command.setArgumentMap(argumentMap);
-        return (B)this;
-    }
-    
-    /**
-     * Gets an ArgumentBuilder for this command
-     * @return A new ArgumentBuilder
-     */
-    public ArgumentBuilder<C, T, B> argumentBuilder() {
-        return ArgumentBuilder.builder(this);
-    }
-    
-    /**
      * Sets the CommandExecutor to be used for this command.
      * @param executor The command executor. (this is usually a method reference)
      */

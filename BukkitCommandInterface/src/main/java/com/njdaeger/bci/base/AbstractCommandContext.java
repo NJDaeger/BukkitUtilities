@@ -2,7 +2,6 @@ package com.njdaeger.bci.base;
 
 import com.njdaeger.bci.SenderType;
 import com.njdaeger.bci.Utils;
-import com.njdaeger.bci.arguments.ArgumentMap;
 import com.njdaeger.bci.arguments.LiveTrack;
 import com.njdaeger.bci.base.executors.CommandExecutor;
 import com.njdaeger.bci.exceptions.InvalidSenderException;
@@ -32,9 +31,9 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
     protected final BCICommand<C, T> command;
     protected final CommandSender sender;
     protected final Plugin plugin;
-    protected final String[] args;
     protected final String alias;
     private LiveTrack liveTrack;
+    protected String[] args;
     
     /**
      * Creates a new CommandContext
@@ -77,29 +76,14 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
         return flags.get(flag) != null;
     }
 
+    //This is used to set the flags used in this particular command execution
     void setFlags(List<LiveFlag> flags) {
         flags.forEach(f -> this.flags.put(f.getFlag().getFlagCharacter(), f));
     }
     
-    /**
-     * Gets the argument map for this command.
-     * @return This command's argument map.
-     */
-    public ArgumentMap<C, T> getArgumentMap() {
-        return command.getArgumentMap();
-    }
-    
-    /**
-     * The argument track which was used in the execution of this command
-     * @return The used argument track. Or null if no argument track was found or if the argument map is empty.
-     */
-    public LiveTrack getTrack() {
-        return liveTrack;
-    }
-    
-    //Sets the track used in this commands execution
-    void setTrack(LiveTrack track) {
-        this.liveTrack = track;
+    //This is used to set the arguments after the flags and their parts have been excluded.
+    void setArgs(String... args) {
+        this.args = args;
     }
     
     /**

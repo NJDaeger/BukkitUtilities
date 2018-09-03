@@ -1,9 +1,6 @@
 package com.njdaeger.bci.base;
 
 import com.njdaeger.bci.SenderType;
-import com.njdaeger.bci.arguments.ArgumentBuilder;
-import com.njdaeger.bci.arguments.ArgumentMap;
-import com.njdaeger.bci.arguments.ArgumentTrack;
 import com.njdaeger.bci.base.executors.CommandExecutor;
 import com.njdaeger.bci.base.executors.TabExecutor;
 import com.njdaeger.bci.flags.AbstractFlag;
@@ -29,15 +26,9 @@ public class BCICommand<C extends AbstractCommandContext<C, T>, T extends Abstra
     private TabExecutor<T> tabExecutor = null;
     private CommandExecutor<C> commandExecutor = null;
     private final Map<Character, AbstractFlag<?>> flags = new HashMap<>();
-    @SuppressWarnings("unchecked")
-    private ArgumentMap<C, T> argumentMap = (ArgumentMap<C, T>)ArgumentBuilder.builder().buildEmptyMap();
     
     public BCICommand(String name) {
         this.name = name;
-    }
-    
-    public void setArgumentMap(ArgumentMap<C, T> argumentMap) {
-        this.argumentMap = argumentMap;
     }
     
     public List<AbstractFlag<?>> getFlags() {
@@ -58,22 +49,6 @@ public class BCICommand<C extends AbstractCommandContext<C, T>, T extends Abstra
     
     public boolean hasFlags() {
         return !flags.isEmpty();
-    }
-    
-    public ArgumentMap<C, T> getArgumentMap() {
-        return argumentMap;
-    }
-    
-    public ArgumentTrack getArgumentTrack(int index) {
-        return argumentMap.getArgumentTrack(index);
-    }
-    
-    public void addArgumentTrack(ArgumentTrack argumentTrack) {
-        argumentMap.addArgumentTrack(argumentTrack);
-    }
-    
-    public void removeArgumentTrack(ArgumentTrack argumentTrack) {
-        argumentMap.removeArgumentTrack(argumentTrack);
     }
     
     public void setCommandExecutor(CommandExecutor<C> commandExecutor) {
@@ -173,14 +148,8 @@ public class BCICommand<C extends AbstractCommandContext<C, T>, T extends Abstra
             if (context.getLength() > maxArgs && maxArgs > -1) {
                 context.tooManyArgs();
             }
-    
-            List<String> args = context.getArgs();
-            if (hasFlags()) {
-                args = Parser.parseFlags(context);
-            }
-            if (!argumentMap.isEmpty()) {
-                context.setTrack(Parser.parseTrack(args, argumentMap));
-            }
+            
+            if (hasFlags()) Parser.parseFlags(context);
             
             commandExecutor.execute(context);
         } catch (BCIException e) {
