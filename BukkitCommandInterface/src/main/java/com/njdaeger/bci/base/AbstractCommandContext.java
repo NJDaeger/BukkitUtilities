@@ -1,8 +1,10 @@
 package com.njdaeger.bci.base;
 
+import com.njdaeger.bci.SenderType;
 import com.njdaeger.bci.Utils;
 import com.njdaeger.bci.arguments.ArgumentMap;
 import com.njdaeger.bci.arguments.LiveTrack;
+import com.njdaeger.bci.base.executors.CommandExecutor;
 import com.njdaeger.bci.exceptions.InvalidSenderException;
 import com.njdaeger.bci.exceptions.NotEnoughArgsException;
 import com.njdaeger.bci.exceptions.PermissionDeniedException;
@@ -20,6 +22,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 @SuppressWarnings({"unused", "WeakerAccess", "unchecked"})
@@ -56,10 +59,20 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
      */
     protected abstract String getPluginMessagePrefix();
     
+    /**
+     * Gets a desired flag from the current execution
+     * @param flag The flag to attempt to get
+     * @return The LiveFlag, unless the flag doesnt exist, in that case it's null.
+     */
     public LiveFlag getFlag(char flag) {
         return flags.get(flag);
     }
     
+    /**
+     * Check if this command context contains certain flags.
+     * @param flag The flag to check
+     * @return True if the flag was within the command, false otherwise.
+     */
     public boolean hasFlag(char flag) {
         return flags.get(flag) != null;
     }
@@ -230,6 +243,23 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
      */
     public CommandSender getSender() {
         return sender;
+    }
+    
+    /**
+     * Get the type of sender of the current CommandSender
+     * @return The current sender type.
+     */
+    public SenderType getSenderType() {
+        return SenderType.of(sender);
+    }
+    
+    /**
+     * Check if this sender type is a certain type.
+     * @param check The type being checked against
+     * @return True if the sender and check match. False otherwise.
+     */
+    public boolean isSenderType(SenderType check) {
+        return getSenderType().equals(check);
     }
     
     /**
@@ -429,6 +459,84 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
      */
     public void invalidSender(String message) throws BCIException {
         throw new InvalidSenderException(message);
+    }
+    
+    /**
+     * Runs a sub command of this command if the sender matches the given sender type
+     *
+     * @param senderType The type of sender needed to run the subCommand
+     * @param executor   The command method (method reference)
+     * @return true if the senderType passed. False otherwise
+     */
+    public boolean subCommand(SenderType senderType, CommandExecutor<C> executor) throws BCIException {
+        if (getSenderType() == senderType) {
+            executor.execute((C)this);
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Runs a sub command of this command if the index of the command matches the given index
+     *
+     * @param index    The index needed to run the command
+     * @param executor The command method (method reference)
+     * @return true if the index passed. False otherwise.
+     */
+    public boolean subCommandAt(int index, CommandExecutor<C> executor) throws BCIException {
+        if (isLength(index)) {
+            executor.execute((C)this);
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Runs a sub command of this command if the index of the command matches the given argument
+     *
+     * @param index index to look for the specified argument
+     * @param match The argument needed to be matched
+     * @param ignoreCase Ignores the case of the given argument
+     * @param executor The command method (method reference)
+     * @return true if the arg at the specified index matches the given string
+     */
+    public boolean subCommandAt(int index, String match, boolean ignoreCase, CommandExecutor<C> executor) throws BCIException {
+        if ((ignoreCase ? argAt(index).equalsIgnoreCase(match) : argAt(index).equals(match))) {
+            executor.execute((C)this);
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Runs a sub command of this command if the index matches the given index and if the sender matches the given sender type
+     *
+     * @param index      The index needed to run the command
+     * @param senderType The type of sender needed to run the subCommand
+     * @param executor   The command method (method reference)
+     * @return true if the index and the senderType passed. False otherwise
+     */
+    public boolean subCommandAt(int index, SenderType senderType, CommandExecutor<C> executor) throws BCIException {
+        if (isLength(index) && getSenderType() == senderType) {
+            executor.execute((C)this);
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Runs a sub command of this command if the predicate passes.
+     *
+     * @param predicate The predicate needed to pass
+     * @param executor  The command method (method reference)
+     * @return true if the predicate passed. False otherwise
+     */
+    public boolean subCommand(Predicate<AbstractCommandContext<C, T>> predicate, CommandExecutor<C> executor) throws BCIException {
+        if (predicate.test(this)) {
+            executor.execute((C)this);
+            return true;
+        }
+        return false;
     }
     
 }

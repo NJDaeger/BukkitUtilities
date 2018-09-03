@@ -1,5 +1,6 @@
 package com.njdaeger.bci;
 
+import com.njdaeger.bci.arguments.ArgumentBuilder;
 import com.njdaeger.bci.base.BCICommand;
 import com.njdaeger.bci.base.BCIException;
 import com.njdaeger.bci.defaults.BCIBuilder;
@@ -26,17 +27,17 @@ public class CommandTest {
             .permissions("bci.test")
             .senders(SenderType.CONSOLE, SenderType.PLAYER)
             .argumentBuilder()
-            .index(0)
-            .arguments(new BooleanType("<boolean>"), new IntegerType("<integer>"))
-            .index(1)
-            .argumentsAfter(BooleanType.class, new BooleanType("<afterBoolBool>"), new DoubleType("<afterBoolDouble>"))
-            .argumentsAfter(IntegerType.class, new BooleanType("<afterIntDouble>"), new IntegerType("afterIntInt"))
-            .arguments(new DoubleType("<doubleArg>"))
-            .build()
+                .index(0)
+                .arguments(new BooleanType("<boolean>"), new IntegerType("<integer>"))
+                .index(1)
+                .argumentsAfter(BooleanType.class, new BooleanType("<afterBoolBool>"), new DoubleType("<afterBoolDouble>"))
+                .argumentsAfter(IntegerType.class, new BooleanType("<afterIntDouble>"), new IntegerType("afterIntInt"))
+                .arguments(new DoubleType("<doubleArg>"))
+                .build()
             .flag(new OptionalFlag('o'))
             .flag(new IntegerFlag('i'))
             .build();
-    
+        
         BCIPlugin.getCommandStore().registerCommand(command);
         
     }

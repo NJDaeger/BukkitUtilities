@@ -9,9 +9,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>BukkitCommandInterface</artifactId>
+    <artifactId>BukkitConfigManager</artifactId>
     <version>0.0.1</version>
-
     <build>
         <plugins>
             <plugin>
@@ -22,7 +21,8 @@
                     <target>8</target>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
+
+
 </project>

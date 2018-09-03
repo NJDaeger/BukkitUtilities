@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
-public final class BCICommand<C extends AbstractCommandContext<C, T>, T extends AbstractTabContext<C, T>> {
+public class BCICommand<C extends AbstractCommandContext<C, T>, T extends AbstractTabContext<C, T>> {
     
     private final String name;
     
@@ -152,11 +152,9 @@ public final class BCICommand<C extends AbstractCommandContext<C, T>, T extends 
         return aliases;
     }
     
-    public void register() {
+    public void register() {}
     
-    }
-    
-    public final boolean execute(C context) {
+    public boolean execute(C context) {
         
         try {
             if (senderTypes != null && senderTypes.length != 0) {
@@ -192,7 +190,7 @@ public final class BCICommand<C extends AbstractCommandContext<C, T>, T extends 
         
     }
 
-    public final List<String> complete(T context) {
+    public List<String> complete(T context) {
         
         try {
             List<String> possible = new ArrayList<>();
