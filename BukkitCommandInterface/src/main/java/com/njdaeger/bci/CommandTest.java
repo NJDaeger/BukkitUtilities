@@ -41,10 +41,7 @@ public class CommandTest {
             }
         }
         if (context.hasFlag('o')) context.send("has flag");
-        if (context.hasFlag('i')) context.send(String.valueOf(context.getFlag('i').getInteger()));
-        System.out.println(context.getArgs());
-        System.out.println(context.argAt(0));
-        System.out.println(context.argAt(1));
+        if (context.hasFlag('i')) context.send(context.getFlag('i').getInteger());
         context.send(context.integerAt(0));
         context.send(context.booleanAt(1));
     }
