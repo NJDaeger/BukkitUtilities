@@ -2,13 +2,18 @@ package com.njdaeger.bci.base;
 
 import com.njdaeger.bci.SenderType;
 import com.njdaeger.bci.Utils;
-import com.njdaeger.bci.arguments.LiveTrack;
 import com.njdaeger.bci.base.executors.CommandExecutor;
+import com.njdaeger.bci.exceptions.ArgumentParseException;
 import com.njdaeger.bci.exceptions.InvalidSenderException;
 import com.njdaeger.bci.exceptions.NotEnoughArgsException;
 import com.njdaeger.bci.exceptions.PermissionDeniedException;
 import com.njdaeger.bci.exceptions.TooManyArgsException;
 import com.njdaeger.bci.flags.LiveFlag;
+import com.njdaeger.bci.types.ParsedType;
+import com.njdaeger.bci.types.defaults.BooleanType;
+import com.njdaeger.bci.types.defaults.DoubleType;
+import com.njdaeger.bci.types.defaults.FloatType;
+import com.njdaeger.bci.types.defaults.IntegerType;
 import org.bukkit.Location;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
@@ -17,6 +22,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +38,6 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
     protected final CommandSender sender;
     protected final Plugin plugin;
     protected final String alias;
-    private LiveTrack liveTrack;
     protected String[] args;
     
     /**
@@ -280,6 +285,177 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
     }
     
     /**
+     * Gets the argument at the desired index parsed as the specified type
+     * @param index The index to parse
+     * @param asType The argument parser type
+     * @param <P> The ParsedType
+     * @param <V> The value returned
+     * @return The parsed argument as the specified value
+     * @throws ArgumentParseException If the argument at the specified index is not parsable to the specified type. or if the index arg is null
+     */
+    public <P extends ParsedType<V>, V> V argAt(int index, Class<P> asType) throws ArgumentParseException {
+        if (hasArgAt(index)) {
+            try {
+                return asType.getDeclaredConstructor().newInstance().parse(argAt(index));
+            }
+            catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                e.printStackTrace();
+            }
+        }
+        throw new ArgumentParseException("Argument at index " + index + " is not parsable to the type " + asType.getSimpleName());
+    }
+    
+    /**
+     * Gets the argument at the desired index parsed as the specified type
+     * @param index The index to parse
+     * @param asType The argument parser type
+     * @param defaultValue default return value
+     * @param <P> The ParsedType
+     * @param <V> The value returned
+     * @return The parsed argument as the specified value, or the default value if there was a parsing error
+     */
+    public <P extends ParsedType<V>, V> V argAt(int index, Class<P> asType, V defaultValue) {
+        try {
+            return isArgAt(index,asType) ? argAt(index, asType) : defaultValue;
+        }
+        catch (ArgumentParseException ignored) {}
+        return defaultValue;
+    }
+    
+    /**
+     * Checks if the argument at the specified index is parsable by the given parser type
+     * @param index The index to check
+     * @param type The argument parser type
+     * @param <P> The ParsedType
+     * @return True if the argument at the given index can be parsed by the given parser, false otherwise.
+     */
+    public <P extends ParsedType> boolean isArgAt(int index, Class<P> type) {
+        try {
+            argAt(index, type);
+        }
+        catch (ArgumentParseException e) {
+            return false;
+        }
+        return true;
+    }
+    
+    /**
+     * Gets the desired argument as a boolean
+     * @param index The index to get the boolean at
+     * @return The boolean value of the argument
+     * @throws ArgumentParseException If the argument at the specified index is not parsable as a boolean
+     */
+    public Boolean booleanAt(int index) throws ArgumentParseException {
+        return argAt(index, BooleanType.class);
+    }
+    
+    /**
+     * Gets the desired argument as a boolean
+     * @param index The index to get the boolean at
+     * @param defaultValue The default return value
+     * @return The boolean value of the argument, or the default if it could not be parsed.
+     */
+    public Boolean booleanAt(int index, Boolean defaultValue) {
+        return argAt(index, BooleanType.class, defaultValue);
+    }
+    
+    /**
+     * Checks if the argument at the specified index is a boolean or not
+     * @param index The index to check
+     * @return True if the argument at the given index can be parsed as a boolean, false otherwise
+     */
+    public boolean isBooleanAt(int index) {
+        return isArgAt(index, BooleanType.class);
+    }
+    
+    /**
+     * Gets the desired argument as an integer
+     * @param index The index to get the integer at
+     * @return The integer value of the argument
+     * @throws ArgumentParseException If the argument at the specified index is not parsable as an integer
+     */
+    public Integer integerAt(int index) throws ArgumentParseException {
+        return argAt(index, IntegerType.class);
+    }
+    
+    /**
+     * Gets the desired argument as an integer
+     * @param index The index to get the integer at
+     * @param defaultValue The default return value
+     * @return The integer value of the argument, or the default if it could not be parsed
+     */
+    public Integer integerAt(int index, Integer defaultValue) {
+        return argAt(index, IntegerType.class, defaultValue);
+    }
+    
+    /**
+     * Checks if the argument at the specified index is an integer or not
+     * @param index The index to check
+     * @return True if the argument at the given index can be parsed as an integer, false otherwise
+     */
+    public boolean isIntegerAt(int index) {
+        return isArgAt(index, IntegerType.class);
+    }
+    
+    /**
+     * Gets the desired argument as a double
+     * @param index The index to get the double at
+     * @return The double value of the argument
+     * @throws ArgumentParseException If the argument at the specified index is not parsable as a double
+     */
+    public Double doubleAt(int index) throws ArgumentParseException{
+        return argAt(index, DoubleType.class);
+    }
+    
+    /**
+     * Gets the desired argument as a double
+     * @param index The index to get the double at
+     * @param defaultValue The default return value
+     * @return The double value of the argument, or the default if it could not be parsed
+     */
+    public Double doubleAt(int index, Double defaultValue) {
+        return argAt(index, DoubleType.class, defaultValue);
+    }
+    
+    /**
+     * Checks if the argument at the specified index is a double or not
+     * @param index The index to check
+     * @return True if the argument at the given index can be parsed as a double, false otherwise
+     */
+    public boolean isDoubleAt(int index) {
+        return isArgAt(index, DoubleType.class);
+    }
+    
+    /**
+     * Gets the desired argument as a float
+     * @param index The index to get the float at
+     * @return The float value of the argument
+     * @throws ArgumentParseException If the argument at the specified index is not parsable as a float
+     */
+    public Float floatAt(int index) throws ArgumentParseException {
+        return argAt(index, FloatType.class);
+    }
+    
+    /**
+     * Gets the desired argument as a float
+     * @param index The index to get the float at
+     * @param defaultValue The default return value
+     * @return The float value of the argument, or the default if it could not be parsed
+     */
+    public Float floatAt(int index, Float defaultValue) {
+        return argAt(index, FloatType.class, defaultValue);
+    }
+    
+    /**
+     * Checks if the argument at the specified index is a float ot not
+     * @param index The index to check
+     * @return True if the argument at the given index can be parsed as a float, false otherwise.
+     */
+    public boolean isFloatAt(int index) {
+        return isArgAt(index, FloatType.class);
+    }
+    
+    /**
      * Gets a list of all the arguments which were used in this execution
      * @return A list of current arguments
      */
@@ -302,6 +478,16 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
      */
     public boolean hasArgAt(int index) {
         return argAt(index) != null;
+    }
+    
+    /**
+     * Whether the arguments has the specified arguments at the given index.
+     * @param index Index to check the argument for
+     * @param match The argument to match
+     * @return True if the argument exists at the index and the argument matches the given string
+     */
+    public boolean hasArgAt(int index, String match) {
+        return hasArgAt(index) && match.matches(argAt(index));
     }
     
     /**
@@ -345,6 +531,14 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
     }
     
     /**
+     * Sends an object to the player
+     * @param object The object to send
+     */
+    public void send(Object object) {
+        send(object.toString());
+    }
+    
+    /**
      * Sends the sender a message
      * @param message The message to send
      */
@@ -366,6 +560,10 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
      */
     public void send(String message, Object... placeholders) {
         send(Utils.formatString(message, placeholders));
+    }
+    
+    public void pluginMessage(Object object) {
+        pluginMessage(object.toString());
     }
     
     /**

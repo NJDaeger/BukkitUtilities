@@ -4,7 +4,9 @@ import com.njdaeger.bci.exceptions.ArgumentParseException;
 
 public abstract class ParsedType<T> {
     
-    public ParsedType() {}
+    public ParsedType() {
+    
+    }
     
     /**
      * How to get to the desired output with a string input.

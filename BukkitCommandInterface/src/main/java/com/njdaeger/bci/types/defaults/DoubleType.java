@@ -5,14 +5,6 @@ import com.njdaeger.bci.types.ParsedType;
 
 public final class DoubleType extends ParsedType<Double> {
     
-    public DoubleType() {
-        super();
-    }
-    
-    public DoubleType(String name) {
-        super(name);
-    }
-    
     @Override
     public Double parse(String input) throws ArgumentParseException {
         double parsed;

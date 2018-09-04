@@ -5,10 +5,6 @@ import com.njdaeger.bci.types.ParsedType;
 
 public final class BooleanType extends ParsedType<Boolean> {
     
-    public BooleanType() {
-        super();
-    }
-    
     @Override
     public Boolean parse(String input) throws ArgumentParseException {
         if (input == null || (!input.equalsIgnoreCase("true") && !input.equalsIgnoreCase("false"))) throw new ArgumentParseException("Boolean argument unable to be parsed. Input: " + input);

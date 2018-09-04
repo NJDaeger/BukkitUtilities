@@ -4,15 +4,7 @@ import com.njdaeger.bci.exceptions.ArgumentParseException;
 import com.njdaeger.bci.types.ParsedType;
 
 public final class IntegerType extends ParsedType<Integer> {
-    
-    public IntegerType() {
-        super();
-    }
-    
-    public IntegerType(String name) {
-        super(name);
-    }
-    
+
     @Override
     public Integer parse(String input) throws ArgumentParseException {
         int parsed;

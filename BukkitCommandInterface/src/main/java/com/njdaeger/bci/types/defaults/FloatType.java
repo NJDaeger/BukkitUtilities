@@ -5,14 +5,6 @@ import com.njdaeger.bci.types.ParsedType;
 
 public final class FloatType extends ParsedType<Float> {
     
-    public FloatType() {
-        super();
-    }
-    
-    public FloatType(String name) {
-        super(name);
-    }
-    
     @Override
     public Float parse(String input) throws ArgumentParseException {
         float parsed;

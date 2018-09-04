@@ -4,6 +4,7 @@ import com.njdaeger.bci.SenderType;
 import com.njdaeger.bci.base.executors.CommandExecutor;
 import com.njdaeger.bci.base.executors.TabExecutor;
 import com.njdaeger.bci.flags.AbstractFlag;
+import com.njdaeger.bci.types.defaults.BooleanType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -130,7 +131,6 @@ public class BCICommand<C extends AbstractCommandContext<C, T>, T extends Abstra
     public void register() {}
     
     public boolean execute(C context) {
-        
         try {
             if (senderTypes != null && senderTypes.length != 0) {
                 List<SenderType> types = Arrays.asList(senderTypes);
@@ -141,15 +141,16 @@ public class BCICommand<C extends AbstractCommandContext<C, T>, T extends Abstra
                 if (!context.hasAnyPermission(permissions)) context.noPermission();
             }
             
+            //Parse flags before we check length that way we can take the length of the flags out of consideration when checking the length
+            if (hasFlags()) Parser.parseFlags(context);
+            
             if (context.getLength() < minArgs && minArgs > -1) {
                 context.notEnoughArgs();
             }
-            
+    
             if (context.getLength() > maxArgs && maxArgs > -1) {
                 context.tooManyArgs();
             }
-            
-            if (hasFlags()) Parser.parseFlags(context);
             
             commandExecutor.execute(context);
         } catch (BCIException e) {

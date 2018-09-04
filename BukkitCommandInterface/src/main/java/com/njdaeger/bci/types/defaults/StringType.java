@@ -4,14 +4,6 @@ import com.njdaeger.bci.types.ParsedType;
 
 public final class StringType extends ParsedType<String> {
     
-    public StringType() {
-        super();
-    }
-    
-    public StringType(String name) {
-        super(name);
-    }
-    
     @Override
     public String parse(String input) {
         return input;

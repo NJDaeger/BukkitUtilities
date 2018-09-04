@@ -1,6 +1,5 @@
 package com.njdaeger.bci;
 
-import com.njdaeger.bci.arguments.ArgumentBuilder;
 import com.njdaeger.bci.base.BCICommand;
 import com.njdaeger.bci.base.BCIException;
 import com.njdaeger.bci.defaults.BCIBuilder;
@@ -8,9 +7,6 @@ import com.njdaeger.bci.defaults.CommandContext;
 import com.njdaeger.bci.defaults.TabContext;
 import com.njdaeger.bci.flags.defaults.IntegerFlag;
 import com.njdaeger.bci.flags.defaults.OptionalFlag;
-import com.njdaeger.bci.types.defaults.BooleanType;
-import com.njdaeger.bci.types.defaults.DoubleType;
-import com.njdaeger.bci.types.defaults.IntegerType;
 import org.bukkit.ChatColor;
 
 public class CommandTest {
@@ -21,19 +17,11 @@ public class CommandTest {
             .executor(this::command)
             .completer(this::completion)
             .minArgs(1)
-            .maxArgs(5)
+            .maxArgs(2)
             .description("Test the BCI")
             .usage("/bci [player] [test]")
             .permissions("bci.test")
             .senders(SenderType.CONSOLE, SenderType.PLAYER)
-            .argumentBuilder()
-                .index(0)
-                .arguments(new BooleanType("<boolean>"), new IntegerType("<integer>"))
-                .index(1)
-                .argumentsAfter(BooleanType.class, new BooleanType("<afterBoolBool>"), new DoubleType("<afterBoolDouble>"))
-                .argumentsAfter(IntegerType.class, new BooleanType("<afterIntDouble>"), new IntegerType("afterIntInt"))
-                .arguments(new DoubleType("<doubleArg>"))
-                .build()
             .flag(new OptionalFlag('o'))
             .flag(new IntegerFlag('i'))
             .build();
@@ -54,11 +42,11 @@ public class CommandTest {
         }
         if (context.hasFlag('o')) context.send("has flag");
         if (context.hasFlag('i')) context.send(String.valueOf(context.getFlag('i').getInteger()));
-        context.send("CURRENT: " + context.getTrack().toString());
-        
-        context.send("" + context.getTrack().nextBoolean());
-        context.send("" + context.getTrack().nextBoolean());
-        
+        System.out.println(context.getArgs());
+        System.out.println(context.argAt(0));
+        System.out.println(context.argAt(1));
+        context.send(context.integerAt(0));
+        context.send(context.booleanAt(1));
     }
     
     public void completion(TabContext context) {
