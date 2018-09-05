@@ -1,5 +1,6 @@
 package com.njdaeger.bci.types;
 
+import com.njdaeger.bci.base.BCIException;
 import com.njdaeger.bci.exceptions.ArgumentParseException;
 
 public abstract class ParsedType<T> {
@@ -14,7 +15,7 @@ public abstract class ParsedType<T> {
      * @return The desired output object
      * @throws ArgumentParseException If the parsing failed.
      */
-    public abstract T parse(String input) throws ArgumentParseException;
+    public abstract T parse(String input) throws BCIException;
     
     /**
      * Gets the generic type class.

@@ -16,6 +16,7 @@ public class Configuration implements IConfig {
         switch (configType) {
             case YML:
                 this.config = new YmlConfig(plugin, file);
+                break;
             case JSON:
         default:
             throw new UnsupportedOperationException("not yet");

@@ -20,7 +20,7 @@ public class YmlConfig extends BaseConfig {
         
         File path;
         if (!configName.contains(File.separator)) {
-            path = plugin.getDataFolder();
+            path = plugin.getDataFolder().getAbsoluteFile();
             this.file = new File(path.getAbsolutePath() + File.separator + configName + ".yml");
         }
         else {

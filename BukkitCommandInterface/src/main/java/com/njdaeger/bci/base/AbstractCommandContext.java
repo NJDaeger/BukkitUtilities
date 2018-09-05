@@ -293,7 +293,7 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
      * @return The parsed argument as the specified value
      * @throws ArgumentParseException If the argument at the specified index is not parsable to the specified type. or if the index arg is null
      */
-    public <P extends ParsedType<V>, V> V argAt(int index, Class<P> asType) throws ArgumentParseException {
+    public <P extends ParsedType<V>, V> V argAt(int index, Class<P> asType) throws BCIException {
         if (hasArgAt(index)) {
             try {
                 return asType.getDeclaredConstructor().newInstance().parse(argAt(index));
@@ -318,7 +318,7 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
         try {
             return isArgAt(index,asType) ? argAt(index, asType) : defaultValue;
         }
-        catch (ArgumentParseException ignored) {}
+        catch (BCIException ignored) {}
         return defaultValue;
     }
     
@@ -333,7 +333,7 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
         try {
             argAt(index, type);
         }
-        catch (ArgumentParseException e) {
+        catch (BCIException e) {
             return false;
         }
         return true;
@@ -345,7 +345,7 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
      * @return The boolean value of the argument
      * @throws ArgumentParseException If the argument at the specified index is not parsable as a boolean
      */
-    public Boolean booleanAt(int index) throws ArgumentParseException {
+    public Boolean booleanAt(int index) throws BCIException {
         return argAt(index, BooleanType.class);
     }
     
@@ -374,7 +374,7 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
      * @return The integer value of the argument
      * @throws ArgumentParseException If the argument at the specified index is not parsable as an integer
      */
-    public Integer integerAt(int index) throws ArgumentParseException {
+    public Integer integerAt(int index) throws BCIException {
         return argAt(index, IntegerType.class);
     }
     
@@ -403,7 +403,7 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
      * @return The double value of the argument
      * @throws ArgumentParseException If the argument at the specified index is not parsable as a double
      */
-    public Double doubleAt(int index) throws ArgumentParseException{
+    public Double doubleAt(int index) throws BCIException {
         return argAt(index, DoubleType.class);
     }
     
@@ -432,7 +432,7 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
      * @return The float value of the argument
      * @throws ArgumentParseException If the argument at the specified index is not parsable as a float
      */
-    public Float floatAt(int index) throws ArgumentParseException {
+    public Float floatAt(int index) throws BCIException {
         return argAt(index, FloatType.class);
     }
     

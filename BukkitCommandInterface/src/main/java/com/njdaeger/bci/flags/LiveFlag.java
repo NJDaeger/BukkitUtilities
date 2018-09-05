@@ -1,6 +1,6 @@
 package com.njdaeger.bci.flags;
 
-import com.njdaeger.bci.exceptions.ArgumentParseException;
+import com.njdaeger.bci.base.BCIException;
 
 public final class LiveFlag {
     
@@ -29,27 +29,27 @@ public final class LiveFlag {
         else return flag.getRawFlag();
     }
     
-    public Boolean getBoolean() throws ArgumentParseException {
+    public Boolean getBoolean() throws BCIException {
         return getAs(Boolean.class);
     }
     
-    public Integer getInteger() throws ArgumentParseException {
+    public Integer getInteger() throws BCIException {
         return getAs(Integer.class);
     }
     
-    public Double getDouble() throws ArgumentParseException {
+    public Double getDouble() throws BCIException {
         return getAs(Double.class);
     }
     
-    public Float getFloat() throws ArgumentParseException {
+    public Float getFloat() throws BCIException {
         return getAs(Float.class);
     }
     
-    public String getString() throws ArgumentParseException {
+    public String getString() throws BCIException {
         return String.valueOf(flag.getFlagType().parse(getRawValue()));
     }
     
-    public <T> T getAs(Class<T> type) throws ArgumentParseException {
+    public <T> T getAs(Class<T> type) throws BCIException {
         return (T)flag.getFlagType().parse(getRawValue());
     }
     

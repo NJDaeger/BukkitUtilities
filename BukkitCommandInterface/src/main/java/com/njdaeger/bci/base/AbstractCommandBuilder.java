@@ -10,7 +10,7 @@ import java.util.Set;
 @SuppressWarnings({"unchecked", "unused", "WeakerAccess"})
 public abstract class AbstractCommandBuilder<C extends AbstractCommandContext<C, T>, T extends AbstractTabContext<C, T>, B extends AbstractCommandBuilder<C, T, B>> {
     
-    protected final BCICommand<C, T> command;
+    protected BCICommand<C, T> command;
     
     /**
      * Create a new command builder
