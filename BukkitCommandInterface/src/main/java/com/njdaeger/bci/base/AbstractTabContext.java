@@ -58,7 +58,7 @@ public abstract class AbstractTabContext<C extends AbstractCommandContext<C, T>,
     }
     
     public int getLength() {
-        return args.length;
+        return args.length - 1;
     }
     
     public boolean isLength(int length) {
@@ -66,7 +66,7 @@ public abstract class AbstractTabContext<C extends AbstractCommandContext<C, T>,
     }
     
     public String getPrevious() {
-        return getLength() == 1 ? null : args[getLength()-2];
+        return getLength() == 0 ? null : args[getLength()-1];
     }
     
     //can be regex
@@ -80,7 +80,7 @@ public abstract class AbstractTabContext<C extends AbstractCommandContext<C, T>,
     }
     
     public String getCurrent() {
-        return getLength() == 0 ? null : args[getLength()-1];
+        return commandContext.argAt(getLength());
     }
     
     //can be regex
@@ -94,7 +94,7 @@ public abstract class AbstractTabContext<C extends AbstractCommandContext<C, T>,
     }
     
     public String argAt(int index) {
-        return (index > -1 && index < getLength()) ? args[index] : null;
+        return commandContext.argAt(index);
     }
     
     public List<String> getArgs() {
@@ -102,7 +102,7 @@ public abstract class AbstractTabContext<C extends AbstractCommandContext<C, T>,
     }
     
     public boolean hasArgs() {
-        return getLength() > 0;
+        return commandContext.hasArgs();
     }
     
     public void send(String message) {
@@ -127,7 +127,7 @@ public abstract class AbstractTabContext<C extends AbstractCommandContext<C, T>,
     }
     
     public void playerCompletionAt(int index) {
-        if (isLength(index + 1)) playerCompletion();
+        if (isLength(index)) playerCompletion();
     }
     
     //can be regex
@@ -150,7 +150,7 @@ public abstract class AbstractTabContext<C extends AbstractCommandContext<C, T>,
     }
     
     public void completionAt(int index, String... completions) {
-        if (isLength(index + 1)) completion(completions);
+        if (isLength(index)) completion(completions);
     }
     
     //can be regex
@@ -173,7 +173,7 @@ public abstract class AbstractTabContext<C extends AbstractCommandContext<C, T>,
     }
     
     public void completionAt(int index, Function<T, List<String>> function) {
-        if (isLength(index + 1)) completion(function);
+        if (isLength(index)) completion(function);
     }
     
     public void completionAfter(String previousArg, Function<T, List<String>> function) {
@@ -201,7 +201,7 @@ public abstract class AbstractTabContext<C extends AbstractCommandContext<C, T>,
     }
     
     public boolean subCompletionAt(int index, TabExecutor<T> executor) throws BCIException {
-        if (isLength(index + 1)) {
+        if (isLength(index)) {
             subCompletion(executor);
             return true;
         }
@@ -209,7 +209,7 @@ public abstract class AbstractTabContext<C extends AbstractCommandContext<C, T>,
     }
     
     public boolean subCompletionAt(int index, SenderType senderType, TabExecutor<T> executor) throws BCIException {
-        if (isLength(index + 1)) {
+        if (isLength(index)) {
             return subCompletion(senderType, executor);
         }
         return false;
@@ -220,7 +220,7 @@ public abstract class AbstractTabContext<C extends AbstractCommandContext<C, T>,
     }
     
     public boolean subCompletionAt(int index, boolean ignoreCase, String match, TabExecutor<T> executor) throws BCIException {
-        if (isLength(index + 1) && isPrevious(ignoreCase, match)) {
+        if (isLength(index) && isPrevious(ignoreCase, match)) {
             subCompletion(executor);
             return true;
         }
