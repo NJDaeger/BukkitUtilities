@@ -204,7 +204,7 @@ public interface ISection {
      * @return True if the path exists, false otherwise.
      */
     default boolean contains(String path) {
-        return getKeys(false).contains(path);
+        return contains(path, false);
     }
     
     /**
