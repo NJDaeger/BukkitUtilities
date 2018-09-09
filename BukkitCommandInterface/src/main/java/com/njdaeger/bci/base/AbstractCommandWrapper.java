@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.plugin.Plugin;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -22,6 +23,7 @@ public abstract class AbstractCommandWrapper<C extends AbstractCommandContext<C,
         this.usageMessage = command.getUsage();
         this.description = command.getDescription();
         this.permissions = command.getPermissions();
+        this.setAliases(Arrays.asList(command.getAliases()));
     }
     
     @Override
