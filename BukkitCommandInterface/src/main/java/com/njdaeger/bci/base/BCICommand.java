@@ -252,7 +252,7 @@ public class BCICommand<C extends AbstractCommandContext<C, T>, T extends Abstra
      * @throws BCIException If the sender does not have permission to run this command
      */
     public void permissionCheck(C context) throws BCIException {
-        if (!context.hasAnyPermission(permissions)) context.noPermission();
+        if (permissions != null && !context.hasAnyPermission(permissions)) context.noPermission();
     }
     
     public void senderCheck(C context) throws BCIException {
