@@ -6,7 +6,11 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -34,20 +38,29 @@ public abstract class AbstractCommandStore<C extends AbstractCommandContext<C, T
     }
     
     public void unregisterCommand(String name) {
-        try {
-            Field commandField = bukkitCommandMap.getClass().getDeclaredField("knownCommands");
-            commandField.setAccessible(true);
-            Map<String, Command> commands = (Map<String, Command>)commandField.get(bukkitCommandMap);
-            commands.remove(name);
-            for (String alias : getCommand(name).getAliases()) {
-                if (commands.containsKey(alias) && commands.get(alias).toString().contains(name)) {
-                    commands.remove(alias);
+        if (isRegistered(name)) {
+            Map<String, Command> commands = null;
+            try {
+                Field commandField = bukkitCommandMap.getClass().getDeclaredField("knownCommands");
+                commandField.setAccessible(true);
+                commands = (Map<String, Command>)commandField.get(bukkitCommandMap);
+            }
+            catch (IllegalAccessException | NoSuchFieldException e) {
+                try {
+                    Method method = bukkitCommandMap.getClass().getDeclaredMethod("getKnownCommands");
+                    method.setAccessible(true);
+                    commands = (Map<String, Command>)method.invoke(bukkitCommandMap);
+                }
+                catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e1) {
+                    e1.printStackTrace();
                 }
             }
+            
+            if (commands == null) throw new RuntimeException("Unable to find knownCommands map.");
+            commands.get(name).unregister(bukkitCommandMap);
+            commands.remove(name);
             bciCommandMap.remove(name);
-        }
-        catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
+            
         }
     }
     
@@ -80,6 +93,18 @@ public abstract class AbstractCommandStore<C extends AbstractCommandContext<C, T
     
     public BCICommand<C, T> getCommand(String name) {
         return bciCommandMap.get(name);
+    }
+    
+    public List<BCICommand<C, T>> getCommands() {
+        return new ArrayList<>(bciCommandMap.values());
+    }
+    
+    public Map<String, BCICommand<C, T>> getBciCommandMap() {
+        return bciCommandMap;
+    }
+    
+    public CommandMap getBukkitCommandMap() {
+        return bukkitCommandMap;
     }
     
 }
