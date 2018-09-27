@@ -44,7 +44,7 @@ public class YmlConfig extends BaseConfig {
     
     @Override
     public boolean isSection(String path) {
-        return getValue(path) instanceof MemorySection;
+        return getValue(path) != null && getValue(path) instanceof MemorySection;
     }
     
     @Override

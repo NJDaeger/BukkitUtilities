@@ -34,7 +34,7 @@ public interface ISection {
      * @return A section of the configuration.
      */
     default ISection getSection(String path) {
-        String base = getCurrentPath().equals("") ? getCurrentPath() : getCurrentPath() + ".";
+        String base = getCurrentPath().isEmpty() ? getCurrentPath() : getCurrentPath() + ".";
         if (!isSection(path)) {
             return null;
         }
@@ -64,11 +64,25 @@ public interface ISection {
     
     /**
      * Checks if this section contains the given section
-     * @param name The section to look for
+     * @param path The section to look for
      * @return True if the section exists, false otherwise.
      */
-    default boolean hasSection(String name) {
-        return getSection(name) != null;
+    default boolean hasSection(String path) {
+        return getSection((getCurrentPath().isEmpty() ? path : getCurrentPath() + "." + path)) != null;
+    }
+    
+    /**
+     * Check if the specified path is a section. This is relative to the current section.
+     * If you are in section <strong>examplePath</strong> and this section contains other sections named <strong>first</strong>
+     * (path being examplePath.first), <strong>second</strong> (path being examplePath.second), and <strong>third</strong>
+     * (path being examplePath.third), you can just call <code>isSection("first")</code> rather than putting the
+     * current path within the input string.
+     *
+     * @param path The path to check.
+     * @return True if the path is a section, false otherwise.
+     */
+    default boolean isSection(String path) {
+        return getConfig().isSection((getCurrentPath().isEmpty() ? path : getCurrentPath() + "." + path));
     }
     
     /**
@@ -193,12 +207,14 @@ public interface ISection {
      * @return An object from the specified path.
      */
     default Object getValue(String path) {
-        String base = getCurrentPath().equals("") ? getCurrentPath() : getCurrentPath() + ".";
+        String base = getCurrentPath().isEmpty() ? getCurrentPath() : getCurrentPath() + ".";
         return getConfig().getValue(base + path);
     }
     
     /**
-     * Check whether a section contains a path.
+     * Check whether a section contains a path or a value to the given path. This is
+     * equivalent to running ISection{@link #contains(String, boolean)} )} with exact
+     * being set to false
      *
      * @param path The path to look for
      * @return True if the path exists, false otherwise.
@@ -257,23 +273,15 @@ public interface ISection {
     }
     
     /**
-     * Checks if this configuration contains a specified path
+     * Checks if this configuration contains a specified path relative to the current section.
      *
      * @param path  The path to look for
-     * @param exact Whether the path to look for needs to be an entry or if it just needs to exist.
+     * @param exact If true, the path must lead to an entry. If false, the path can be either an entry or a section.
      * @return True if the path exists.
      */
     default boolean contains(String path, boolean exact) {
-        if (exact) {
-            return getValue(path) != null;
-        } else {
-            for (String entry : getKeys(true)) {
-                if (entry.startsWith(path)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        if (exact && !isSection(path)) return getValue(path) != null;
+        else return isSection(path) || getValue(path) != null;
     }
     
     /**
@@ -282,32 +290,36 @@ public interface ISection {
      * @return The previous section, returns null if no previous section exists.
      */
     default ISection getParent() {
-        if (!getCurrentPath().contains(".")) {
-            return null;
-        } else {
-            return new Section(getCurrentPath().substring(0, getCurrentPath().lastIndexOf(".")), getConfig());
-        }
+        if (!getCurrentPath().contains(".")) return null;
+        else return new Section(getCurrentPath().substring(0, getCurrentPath().lastIndexOf(".")), getConfig());
     }
     
-    
-    boolean isSection(String path);
-    
-    ConfigType getType();
+    /**
+     * Get the current configuration type
+     * @return The configuration type
+     */
+    default ConfigType getType() {
+        return getConfig().getType();
+    }
     
     /**
      * Gets the host plugin.
      *
      * @return The host plugin.
      */
-    Plugin getPlugin();
+    default Plugin getPlugin() {
+        return getConfig().getPlugin();
+    }
     
     /**
-     * Adds a new entry to the current config.
+     * Adds a new entry to the current config relative to the current section.
      *
      * @param path  The path in the config.
      * @param value The value to set this entry to.
      */
-    void addEntry(String path, Object value);
+    default void addEntry(String path, Object value) {
+        getConfig().addEntry((getCurrentPath().isEmpty() ? path : getCurrentPath() + "." + path), value);
+    }
     
     /**
      * Adds a new entry to the current config. If the
@@ -318,7 +330,9 @@ public interface ISection {
      * @param path  The path in the config.
      * @param value The value to set the path to.
      */
-    void setEntry(String path, Object value);
+    default void setEntry(String path, Object value) {
+        getConfig().setEntry((getCurrentPath().isEmpty() ? path : getCurrentPath() + "." + path), value);
+    }
     
     /**
      * Gets the current path of the configuration section.

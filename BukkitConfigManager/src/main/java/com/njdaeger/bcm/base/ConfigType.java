@@ -1,12 +1,10 @@
 package com.njdaeger.bcm.base;
 
-import com.njdaeger.bcm.types.JsonConfig;
 import com.njdaeger.bcm.types.YmlConfig;
 
 public enum ConfigType {
     
-    YML(YmlConfig.class),
-    JSON(JsonConfig.class);
+    YML(YmlConfig.class);
     
     private final Class<? extends BaseConfig> configType;
     
