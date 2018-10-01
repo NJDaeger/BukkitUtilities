@@ -20,7 +20,7 @@ public final class Parser {
             if (!matcher.find()) continue;
             argumentString = matcher.replaceFirst("");
             if (flag.hasFollowingValue()) currentFlags.add(new LiveFlag(flag, matcher.group()));
-            else currentFlags.add(new LiveFlag(flag, flag.getRawFlag()));
+            else currentFlags.add(new LiveFlag(flag, matcher.group()));
         }
         command.setFlags(currentFlags);
         command.setArgs(argumentString.split(" "));

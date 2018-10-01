@@ -23,7 +23,7 @@ public final class LiveFlag {
     
     public String getRawValue() {
         if (flag.isSplitFlag()) {
-            return separatedFlag.split(String.valueOf(flag.getSplitter()))[1];
+            return separatedFlag.split(String.valueOf(flag.getSplitter().charValue()))[1];
         }
         else if (flag.hasFollowingValue()) return separatedFlag.split(" ")[1];
         else return flag.getRawFlag();
