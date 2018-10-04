@@ -275,7 +275,7 @@ public class BCICommand<C extends AbstractCommandContext<C, T>, T extends Abstra
             permissionCheck(context);
             
             //Parse flags before we check length that way we can take the length of the flags out of consideration when checking the length
-            if (hasFlags()) Parser.parseFlags(context);
+            if (hasFlags() && context.hasArgs()) Parser.parseFlags(context);
             
             minimumCheck(context);
             maximumCheck(context);
