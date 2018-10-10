@@ -12,6 +12,7 @@
         <module>BukkitCommandInterface</module>
         <module>BukkitTextUtils</module>
         <module>BukkitConfigManager</module>
+        <module>BukkitUtilities</module>
     </modules>
 
     <dependencies>
