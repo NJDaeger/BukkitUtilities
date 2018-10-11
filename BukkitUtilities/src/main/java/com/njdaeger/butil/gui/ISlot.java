@@ -1,8 +1,16 @@
 package com.njdaeger.butil.gui;
 
+import org.bukkit.inventory.ItemStack;
+
 public interface ISlot {
     
-    void onPress();
+    ItemStack getCurrent();
+    
+    void setCurrent(ItemStack stack);
+    
+    int getSlot();
+    
+    void setSlot(int slot);
     
     /*
     
