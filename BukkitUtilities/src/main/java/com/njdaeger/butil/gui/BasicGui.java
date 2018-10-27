@@ -1,14 +1,18 @@
 package com.njdaeger.butil.gui;
 
-public class BasicGui implements IGui<BasicGui> {
-    
-    @Override
-    public BasicGui setSlot(ISlot<?, ?> slot) {
-        return null;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+
+import java.util.function.Function;
+
+public class BasicGui extends AbstractInventory<BasicGui> {
+
+    public BasicGui(Plugin plugin, int size, Function<Player, String> title) {
+        super(plugin, size, title);
     }
-    
-    @Override
-    public ISlot<?, ?> getSlot(int index) {
-        return null;
+
+    public BasicGui(Plugin plugin, int size, String title) {
+        super(plugin, size, title);
     }
+
 }

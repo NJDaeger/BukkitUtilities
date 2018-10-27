@@ -1,0 +1,7 @@
+name: BUtilTest
+version: 1.0.0
+api-version: 1.13
+main: com.njdaeger.butil.BUtilMain
+commands:
+  btest:
+    description: Test the plugin

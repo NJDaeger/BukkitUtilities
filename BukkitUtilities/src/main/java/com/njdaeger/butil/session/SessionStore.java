@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-@SuppressWarnings({"unused", "unchecked", "WeakerAccess"})
+//@SuppressWarnings({"unused", "unchecked", "WeakerAccess"})
 public final class SessionStore {
     
     private static Pair<Plugin, SessionStore> PLUGIN_STORE_PAIR = null;
@@ -113,29 +113,29 @@ public final class SessionStore {
     public void removeNamespaces(Predicate<SessionNamespace<?, ? extends ISession<?, ?>>> predicate) {
         namespaces.values().stream().filter(predicate).map(SessionNamespace::getNamespace).forEach(this::removeNamespace);
     }
-    
-    /**
+    /*
+    *//**
      * Removes all the stored namespaces which match the given predicate
      * @param predicate The predicate to match
      * @param sessionType The type of session in the wanted namespace
      * @param <S> The type of session
-     */
+     *//*
     public <S extends ISession<?, S>> void removeNamespaces(Predicate<SessionNamespace<?, S>> predicate, Class<S> sessionType) {
-        namespaces.values().stream().filter((Predicate<? super SessionNamespace<?, ? extends ISession<?, ?>>>)predicate).map(SessionNamespace::getNamespace).forEach(this::removeNamespace);
+        namespaces.values().stream().filter((Predicate<? super SessionNamespace<?, ? extends ISession<?, ?>>>) predicate).map(SessionNamespace::getNamespace).forEach(this::removeNamespace);
     }
     
-    /**
+    *//**
      * Removes all the stored namespaces which match the given predicate
      * @param predicate The predicate to match
      * @param sessionType The type of session in the wanted namespace
      * @param type The type held in the session
      * @param <T> The type the session represents
      * @param <S> The session type.
-     */
+     *//*
     public <T, S extends ISession<T, S>> void removeNamespaces(Predicate<SessionNamespace<T, S>> predicate, Class<S> sessionType, Class<T> type) {
         namespaces.values().stream().filter((Predicate<? super SessionNamespace<?, ? extends ISession<?, ?>>>)predicate).map(SessionNamespace::getNamespace).forEach(this::removeNamespace);
     }
-    
+    */
     /**
      * Removes all the stored namespaces
      */

@@ -1,5 +1,6 @@
 package com.njdaeger.butil.gui;
 
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.function.BiFunction;
@@ -7,10 +8,10 @@ import java.util.function.BiFunction;
 /**
  * Represents a slot/button in an inventory
  *
- * @param <T> The type using this button
- * @param <U> The current slot type
+ * @param <T> The type of GUI
+ * @param <S> The current slot type
  */
-public interface ISlot<T, U extends ISlot<T, U>> {
+public interface ISlot<T extends IGui<T>, S extends ISlot<T, S>> {
 
     /**
      * Gets the current item in this slot
@@ -20,21 +21,20 @@ public interface ISlot<T, U extends ISlot<T, U>> {
     ItemStack getCurrent();
 
     /**
-     * Sets the new item for the slot and automatically updates
+     * Sets the new item function for the slot.
      *
      * @param stack The new item function for this slot.
      * @return This button
      */
-    U setCurrent(BiFunction<T, U, ItemStack> stack);
+    S setCurrent(BiFunction<T, S, ItemStack> stack);
 
     /**
-     * Sets the new item for this current button and optionally allows you to update it automatically or not.
+     * Sets the new item for the slot
      *
-     * @param stack The new item function for this slot
-     * @param update True will update this slot automatically, false will not update it automatically.
+     * @param stack The new itemstack for this slot
      * @return This button
      */
-    U setCurrent(BiFunction<T, U, ItemStack> stack, boolean update);
+    S setCurrent(ItemStack stack);
 
     /**
      * Get this button's current slot.
@@ -44,93 +44,57 @@ public interface ISlot<T, U extends ISlot<T, U>> {
     int getSlot();
 
     /**
-     * Will move this button over to a new slot (automatically updating it). All the current values will remain the
+     * Will move this button over to a new slot. All the current values will remain the
      * same.<p> This will replace any existing item which is currently in the specified slot.
      *
      * @param slot The new slot to move this button to
      * @return This button
      */
-    default U setSlot(int slot) {
+    default S setSlot(int slot) {
         return setSlot(slot, false);
     }
 
     /**
-     * Will move this button over to a new slot (automatically updating it). Optionally keeping all its current
-     * values.<p> This will replace any existing item which is currently in the specified slot.
+     * Will move this button over to a new slot. Optionally keeping all its current values.<p> This will replace any
+     * existing item which is currently in the specified slot.
      *
      * @param slot The new slot to move this button to
      * @param reset True will reset the current values associated with this button. False will keep the current
      *         values.
      * @return This button
      */
-    default U setSlot(int slot, boolean reset) {
-        return setSlot(slot, reset, true);
-    }
+    S setSlot(int slot, boolean reset);
 
     /**
-     * Will move this button over to a new slot. Optionally updating it upon setting, also optionally keeping all its
-     * current values.<p> This will replace any existing item which is currently in the specified slot.
+     * This will attempt to move this button over to the provided slot if it is empty. Otherwise it will not move. If it
+     * is set, the settings from the current button will remain.
      *
-     * @param slot The new slot to move this button to
-     * @param reset True will reset the current values associated with this button. False will keep the current
-     *         values.
-     * @param update True will update the slot and show results instantly, false will require you to call the
-     *         update method.
+     * @param slot The slot to attempt to move this button to
      * @return This button
      */
-    U setSlot(int slot, boolean reset, boolean update);
-
-    /**
-     * @param slot
-     * @return
-     */
-    default U moveSlot(int slot) {
-
-    }
-
-    default U moveSlot(int slot, boolean reset) {
-
+    default S moveSlot(int slot) {
+        return moveSlot(slot, false);
     }
 
     /**
-     * This will attempt to move this button over to a new slot if the slot provided is empty. Otherwise it will not
-     * move. Optionally updating it upon setting, also optionally keeping all its current values.
+     * This will attempt to move this button over to the provided slot if it is empty. Otherwise it will not move. If it
+     * is set, the button will optionally either be reset or keep its current settings.
      *
      * @param slot The slot to attempt to move this button to
      * @param reset True will reset the current values associated with this button. False will keep the current
-     *         values.
-     * @param update True will update the slot and show results instantly, false will require you to call the
-     *         update method.
+     *         values
      * @return This button
      */
-    U moveSlot(int slot, boolean reset, boolean update);
+    S moveSlot(int slot, boolean reset);
 
-    void update();
+    boolean hasParentGui();
+
+    void setParentGui(T gui);
+
+    void onClick(InventoryClickEvent event);
 
     void remove();
 
-    IGui<T> getGui();
-    
-    /*
-    
-    How i envision this:
-    
-    PagedGui gui = new PagedGui();
-    
-    new BooleanButton(Item on, Item off);
-        //When the button is pressed to turn it on
-        void onClick(InventoryClickEvent event);
-        
-        //When the button is pressed to turn it off
-        void offClick(InventoryClickEvent event);
-        
-        boolean isOn();
-        
-        void setOn(boolean value);
-    
-    gui.setSlot(new Buttion));
-    
-     */
-
+    T getGui();
 
 }
