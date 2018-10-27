@@ -1,6 +1,6 @@
 package com.njdaeger.butil;
 
-import com.njdaeger.butil.gui.BasicGui;
+import com.njdaeger.butil.gui.inventory.BasicGui;
 import com.njdaeger.butil.gui.buttons.ButtonBuilder;
 import com.njdaeger.butil.gui.buttons.IncrementalButton;
 import org.bukkit.Material;

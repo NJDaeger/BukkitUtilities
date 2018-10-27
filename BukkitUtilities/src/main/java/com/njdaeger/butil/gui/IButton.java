@@ -11,7 +11,7 @@ import java.util.function.BiFunction;
  * @param <T> The type of GUI
  * @param <S> The current slot type
  */
-public interface ISlot<T extends IGui<T>, S extends ISlot<T, S>> {
+public interface IButton<T extends IGui<T>, S extends IButton<T, S>> {
 
     /**
      * Gets the current item in this slot
@@ -72,8 +72,8 @@ public interface ISlot<T extends IGui<T>, S extends ISlot<T, S>> {
      * @param slot The slot to attempt to move this button to
      * @return This button
      */
-    default S moveSlot(int slot) {
-        return moveSlot(slot, false);
+    default S moveToSlot(int slot) {
+        return moveToSlot(slot, false);
     }
 
     /**
@@ -85,16 +85,39 @@ public interface ISlot<T extends IGui<T>, S extends ISlot<T, S>> {
      *         values
      * @return This button
      */
-    S moveSlot(int slot, boolean reset);
+    S moveToSlot(int slot, boolean reset);
 
+    /**
+     * Check whether this specific button has a parent gui.
+     *
+     * @return True if it has a parent gui, false otherwise.
+     */
     boolean hasParentGui();
 
+    /**
+     * Sets the parent gui for this button
+     *
+     * @param gui The parent gui
+     */
     void setParentGui(T gui);
 
+    /**
+     * Represents a click event and will execute procedures this specific button has
+     *
+     * @param event The click event
+     */
     void onClick(InventoryClickEvent event);
 
+    /**
+     * Removes this button.
+     */
     void remove();
 
+    /**
+     * Gets the current parent gui
+     *
+     * @return The parent gui
+     */
     T getGui();
 
 }

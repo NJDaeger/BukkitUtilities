@@ -1,5 +1,8 @@
-package com.njdaeger.butil.gui;
+package com.njdaeger.butil.gui.inventory;
 
+import com.njdaeger.butil.gui.IButton;
+import com.njdaeger.butil.gui.IGui;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -23,15 +26,17 @@ public abstract class AbstractInventory<T extends IGui<T>> implements IGui<T> {
     protected final int size;
 
     private final Map<UUID, Inventory> inventories;
-    private final ISlot<T, ?>[] slots;
+    private final IButton<T, ?>[] slots;
 
     @SuppressWarnings("unchecked")
     public AbstractInventory(Plugin plugin, int size, Function<Player, String> title) {
+        Validate.isTrue(size % 9 == 0, "Size must be a multiple of 9.");
+
         this.title = title;
         this.plugin = plugin;
         this.size = size;
         this.inventories = new HashMap<>();
-        this.slots = new ISlot[size];
+        this.slots = new IButton[size];
 
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
@@ -41,18 +46,18 @@ public abstract class AbstractInventory<T extends IGui<T>> implements IGui<T> {
     }
 
     @Override
-    public <S extends ISlot<T, S>> T setItem(int index, S slot) {
-        slot.setParentGui((T) this);
-        this.slots[index] = slot;
+    public <S extends IButton<T, S>> T setItem(int index, S button) {
+        button.setParentGui((T) this);
+        this.slots[index] = button;
         return (T)this;
     }
 
     @Override
-    public <S extends ISlot<T, S>> T addItem(S slot) {
+    public <S extends IButton<T, S>> T addItem(S button) {
         for (int i = 0; i < slots.length; i++) {
             if (slots[i] == null) {
-                slot.setParentGui((T)this);
-                this.slots[i] = slot;
+                button.setParentGui((T)this);
+                this.slots[i] = button;
                 break;
             }
         }
@@ -60,8 +65,8 @@ public abstract class AbstractInventory<T extends IGui<T>> implements IGui<T> {
     }
 
     @Override
-    public T removeItem(int index) {
-        this.slots[index] = null;
+    public T removeItem(int slot) {
+        this.slots[slot] = null;
         return (T)this;
     }
 
@@ -81,21 +86,21 @@ public abstract class AbstractInventory<T extends IGui<T>> implements IGui<T> {
     }
 
     @Override
-    public int getSlotOf(ISlot<?, ?> slot) {
+    public int getSlotOf(IButton<?, ?> button) {
         for (int i = 0; i < slots.length; i++) {
-            if (slots[i] == slot) return i;
+            if (slots[i] == button) return i;
         }
         return -1;
     }
 
     @Override
-    public ISlot<T, ?> getSlot(int slot) {
+    public IButton<T, ?> getButton(int slot) {
         return isSlotOpen(slot) ? slots[slot] : null;
     }
 
     @Override
-    public <S extends ISlot<T, S>> ISlot<T, S> getSlot(Class<S> slotType, int slot) {
-        return isSlotOpen(slot) ? (ISlot<T, S>)slots[slot] : null;
+    public <S extends IButton<T, S>> IButton<T, S> getButton(Class<S> slotType, int slot) {
+        return isSlotOpen(slot) ? (IButton<T, S>)slots[slot] : null;
     }
 
     @Override
@@ -119,7 +124,11 @@ public abstract class AbstractInventory<T extends IGui<T>> implements IGui<T> {
 
     @Override
     public void destroy() {
+        InventoryCloseEvent.getHandlerList().unregister(this);
+        InventoryClickEvent.getHandlerList().unregister(this);
+        InventoryDragEvent.getHandlerList().unregister(this);
 
+        closeAll();
     }
 
     private Inventory getNewInventory(Player player) {
@@ -130,7 +139,7 @@ public abstract class AbstractInventory<T extends IGui<T>> implements IGui<T> {
 
     private void buildInventory(Inventory inventory) {
         inventory.clear();
-        for (ISlot<T, ?> slot : slots) {
+        for (IButton<T, ?> slot : slots) {
             if (slot != null) {
                 inventory.setItem(slot.getSlot(), slot.getCurrent());
             }

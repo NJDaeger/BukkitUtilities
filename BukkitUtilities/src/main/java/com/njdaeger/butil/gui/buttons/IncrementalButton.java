@@ -3,14 +3,14 @@ package com.njdaeger.butil.gui.buttons;
 import com.njdaeger.butil.TriConsumer;
 import com.njdaeger.butil.TriPredicate;
 import com.njdaeger.butil.gui.IGui;
-import com.njdaeger.butil.gui.ISlot;
+import com.njdaeger.butil.gui.IButton;
 import com.njdaeger.butil.gui.IValueHolder;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.function.BiFunction;
 
-public class IncrementalButton<T extends IGui<T>> implements ISlot<T, IncrementalButton<T>>, IValueHolder<Integer> {
+public class IncrementalButton<T extends IGui<T>> implements IButton<T, IncrementalButton<T>>, IValueHolder<Integer> {
 
     private TriPredicate<T, IncrementalButton<T>, InventoryClickEvent> decrementWhen;
     private TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> onDecrement;
@@ -98,7 +98,7 @@ public class IncrementalButton<T extends IGui<T>> implements ISlot<T, Incrementa
     }
 
     @Override
-    public IncrementalButton<T> moveSlot(int slot, boolean reset) {
+    public IncrementalButton<T> moveToSlot(int slot, boolean reset) {
         if (hasParentGui() && parent.isSlotOpen(slot)) {
             parent.removeItem(getSlot());
             setSlot(slot, reset);
@@ -121,8 +121,8 @@ public class IncrementalButton<T extends IGui<T>> implements ISlot<T, Incrementa
             if (onDecrement != null) onIncrement.accept(parent, this, event);
         }
 
-        if (max == currentValue) onMax.accept(parent, this, event);
-        if (min == currentValue) onMin.accept(parent, this, event);
+        if (max == currentValue && onMax != null) onMax.accept(parent, this, event);
+        if (min == currentValue && onMin != null) onMin.accept(parent, this, event);
 
     }
 
@@ -147,7 +147,7 @@ public class IncrementalButton<T extends IGui<T>> implements ISlot<T, Incrementa
     }
 
     private boolean withinBounds() {
-        return currentValue <= max || currentValue >= min;
+        return currentValue < max || currentValue > min;
     }
 
 }
