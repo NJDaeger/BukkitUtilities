@@ -223,6 +223,9 @@ public final class IncrementalButtonBuilder<T extends IGui<T>> {
      */
     public IncrementalButton<T> build() {
 
+        Validate.isTrue(minimum < maximum, "Minimum must be less than the maximum.");
+        Validate.isTrue(start >= minimum && start <= maximum, "Start must be within the minimum and maximum bounds.");
+
         IncrementalButton<T> button = new IncrementalButton<>(minimum, maximum, start, step, shiftStep);
         button.setCurrent(itemStack);
         button.setValue(start);
