@@ -35,31 +35,22 @@ public class IncrementalButton<T extends IGui<T>> implements IButton<T, Incremen
         this.max = max;
     }
 
-    IncrementalButton<T> onMax(TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> hitMax) {
+    void onMax(TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> hitMax) {
         this.onMax = hitMax;
-        return this;
     }
 
-    IncrementalButton<T> onMin(TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> hitMin) {
+    void onMin(TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> hitMin) {
         this.onMin = hitMin;
-        return this;
     }
 
-    IncrementalButton<T> onIncrement(TriPredicate<T, IncrementalButton<T>, InventoryClickEvent> incrementWhen, TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> increment) {
+    void onIncrement(TriPredicate<T, IncrementalButton<T>, InventoryClickEvent> incrementWhen, TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> increment) {
         this.incrementWhen = incrementWhen;
         this.onIncrement = increment;
-        return this;
     }
 
-    IncrementalButton<T> onDecrement(TriPredicate<T, IncrementalButton<T>, InventoryClickEvent> decrementWhen, TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> decrement) {
+    void onDecrement(TriPredicate<T, IncrementalButton<T>, InventoryClickEvent> decrementWhen, TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> decrement) {
         this.decrementWhen = decrementWhen;
         this.onDecrement = decrement;
-        return this;
-    }
-
-    @Override
-    public boolean hasParentGui() {
-        return this.parent != null;
     }
 
     @Override
@@ -79,29 +70,10 @@ public class IncrementalButton<T extends IGui<T>> implements IButton<T, Incremen
     }
 
     @Override
-    public IncrementalButton<T> setCurrent(ItemStack stack) {
-        return setCurrent((gui, button) -> stack);
-    }
-
-    @Override
-    public int getSlot() {
-        return hasParentGui() ? parent.getSlotOf(this) : -1;
-    }
-
-    @Override
     public IncrementalButton<T> setSlot(int slot, boolean reset) {
         if (hasParentGui()) {
             if (reset) this.currentValue = start;
             parent.setItem(slot, this);
-        }
-        return this;
-    }
-
-    @Override
-    public IncrementalButton<T> moveToSlot(int slot, boolean reset) {
-        if (hasParentGui() && parent.isSlotOpen(slot)) {
-            parent.removeItem(getSlot());
-            setSlot(slot, reset);
         }
         return this;
     }
@@ -127,12 +99,7 @@ public class IncrementalButton<T extends IGui<T>> implements IButton<T, Incremen
     }
 
     @Override
-    public void remove() {
-        if (hasParentGui()) parent.removeItem(getSlot());
-    }
-
-    @Override
-    public T getGui() {
+    public T getParent() {
         return parent;
     }
 

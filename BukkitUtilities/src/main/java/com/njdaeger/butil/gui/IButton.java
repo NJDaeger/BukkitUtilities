@@ -29,19 +29,65 @@ public interface IButton<T extends IGui<T>, S extends IButton<T, S>> {
     S setCurrent(BiFunction<T, S, ItemStack> stack);
 
     /**
+     * Will move this button over to a new slot. Optionally keeping all its current values.<p> This will replace any
+     * existing item which is currently in the specified slot.
+     *
+     * @param slot The new slot to move this button to
+     * @param reset True will reset the current values associated with this button. False will keep the current
+     *         values.
+     * @return This button
+     */
+    S setSlot(int slot, boolean reset);
+
+    /**
+     * Sets the parent gui for this button
+     *
+     * @param gui The parent gui
+     */
+    void setParentGui(T gui);
+
+    /**
+     * Represents a click event and will execute procedures this specific button has
+     *
+     * @param event The click event
+     */
+    void onClick(InventoryClickEvent event);
+
+
+    /**
+     * Gets the current parent gui
+     *
+     * @return The parent gui
+     */
+    T getParent();
+
+    /**
+     * Check whether this specific button has a parent gui.
+     *
+     * @return True if it has a parent gui, false otherwise.
+     */
+    default boolean hasParentGui() {
+        return getParent() != null;
+    }
+
+    /**
      * Sets the new item for the slot
      *
      * @param stack The new itemstack for this slot
      * @return This button
      */
-    S setCurrent(ItemStack stack);
+    default S setCurrent(ItemStack stack) {
+        return setCurrent((gui, button) -> stack);
+    }
 
     /**
      * Get this button's current slot.
      *
      * @return This buttons current slot
      */
-    int getSlot();
+    default int getSlot() {
+        return hasParentGui() ? getParent().getSlotOf(this) : -1;
+    }
 
     /**
      * Will move this button over to a new slot. All the current values will remain the
@@ -53,17 +99,6 @@ public interface IButton<T extends IGui<T>, S extends IButton<T, S>> {
     default S setSlot(int slot) {
         return setSlot(slot, false);
     }
-
-    /**
-     * Will move this button over to a new slot. Optionally keeping all its current values.<p> This will replace any
-     * existing item which is currently in the specified slot.
-     *
-     * @param slot The new slot to move this button to
-     * @param reset True will reset the current values associated with this button. False will keep the current
-     *         values.
-     * @return This button
-     */
-    S setSlot(int slot, boolean reset);
 
     /**
      * This will attempt to move this button over to the provided slot if it is empty. Otherwise it will not move. If it
@@ -85,39 +120,19 @@ public interface IButton<T extends IGui<T>, S extends IButton<T, S>> {
      *         values
      * @return This button
      */
-    S moveToSlot(int slot, boolean reset);
-
-    /**
-     * Check whether this specific button has a parent gui.
-     *
-     * @return True if it has a parent gui, false otherwise.
-     */
-    boolean hasParentGui();
-
-    /**
-     * Sets the parent gui for this button
-     *
-     * @param gui The parent gui
-     */
-    void setParentGui(T gui);
-
-    /**
-     * Represents a click event and will execute procedures this specific button has
-     *
-     * @param event The click event
-     */
-    void onClick(InventoryClickEvent event);
+    default S moveToSlot(int slot, boolean reset) {
+        if (hasParentGui() && getParent().isSlotOpen(slot)) {
+            getParent().removeItem(getSlot());
+            setSlot(slot, reset);
+        }
+        return (S)this;
+    }
 
     /**
      * Removes this button.
      */
-    void remove();
-
-    /**
-     * Gets the current parent gui
-     *
-     * @return The parent gui
-     */
-    T getGui();
+    default void remove() {
+        if (hasParentGui()) getParent().removeItem(getSlot());
+    }
 
 }

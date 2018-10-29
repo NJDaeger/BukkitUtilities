@@ -37,12 +37,7 @@ public final class IncrementalButtonBuilder<T extends IGui<T>> {
         button.setCurrent(itemStack);
         gui.update(player);
     };
-    private TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> increment = (gui, button, event) -> {
-        Player player = (Player) event.getWhoClicked();
-        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
-        button.setCurrent(itemStack);
-        gui.update(player);
-    };
+    private TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> increment = decrement;
     private TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> hitMax = (gui, button, event) -> {
         Player player = (Player) event.getWhoClicked();
         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1, 1);
@@ -64,7 +59,7 @@ public final class IncrementalButtonBuilder<T extends IGui<T>> {
      *
      * @param itemStack The ItemStack to set for this button
      */
-    public IncrementalButtonBuilder<T> itemstack(BiFunction<T, IncrementalButton<T>, ItemStack> itemStack) {
+    public IncrementalButtonBuilder<T> itemStack(BiFunction<T, IncrementalButton<T>, ItemStack> itemStack) {
         Validate.notNull(itemStack, "A non-null ItemStack must be provided.");
         this.itemStack = itemStack;
         return this;
@@ -75,7 +70,7 @@ public final class IncrementalButtonBuilder<T extends IGui<T>> {
      *
      * @param itemStack The ItemStack to set
      */
-    public IncrementalButtonBuilder<T> itemstack(ItemStack itemStack) {
+    public IncrementalButtonBuilder<T> itemStack(ItemStack itemStack) {
         Validate.notNull(itemStack, "A non-null ItemStack must be provided.");
         this.itemStack = (gui, button) -> itemStack;
         return this;
