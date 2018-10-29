@@ -4,15 +4,13 @@ import com.njdaeger.butil.TriConsumer;
 import com.njdaeger.butil.TriPredicate;
 import com.njdaeger.butil.gui.IButton;
 import com.njdaeger.butil.gui.IGui;
-import com.njdaeger.butil.gui.IValueHolder;
-import org.apache.commons.lang.Validate;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 import java.util.function.BiFunction;
 
-public class ChoiceButton<T extends IGui<T>, C> implements IButton<T, ChoiceButton<T, C>>, IValueHolder<C> {
+public class ChoiceButton<T extends IGui<T>, C> implements IButton<T, ChoiceButton<T, C>> {
 
     private TriConsumer<T, ChoiceButton<T, C>, InventoryClickEvent> onMinChoice;
     private TriConsumer<T, ChoiceButton<T, C>, InventoryClickEvent> onMaxChoice;
@@ -21,22 +19,19 @@ public class ChoiceButton<T extends IGui<T>, C> implements IButton<T, ChoiceButt
     private TriConsumer<T, ChoiceButton<T, C>, InventoryClickEvent> onPrevious;
     private TriConsumer<T, ChoiceButton<T, C>, InventoryClickEvent> onNext;
     private BiFunction<T, ChoiceButton<T, C>, ItemStack> itemStack;
-    private boolean loopChoices;
+    private final boolean loopChoices;
+    private final int shiftIndex;
+    private int currentIndex;
     private C startingChoice;
     private C currentChoice;
     private List<C> choices;
-    private int currentIndex;
-    private int shiftIndex;
+    private final int index;
     private T parent;
-    private int index;
 
-    ChoiceButton(List<C> choices, C startingChoice, int index, int shiftIndex) {
-        Validate.isTrue(choices.contains(startingChoice), "List of choices must contain the starting choice.");
-        this.choices = choices;
-        this.currentChoice = startingChoice;
-        this.startingChoice = startingChoice;
+    ChoiceButton(int index, int shiftIndex, boolean loopChoices) {
         this.index = index;
         this.shiftIndex = shiftIndex;
+        this.loopChoices = loopChoices;
     }
 
     void nextWhen(TriPredicate<T, ChoiceButton<T, C>, InventoryClickEvent> nextWhen) {
@@ -64,12 +59,12 @@ public class ChoiceButton<T extends IGui<T>, C> implements IButton<T, ChoiceButt
     }
 
     @Override
-    public ItemStack getCurrent() {
+    public ItemStack getStack() {
         return itemStack.apply(parent, this);
     }
 
     @Override
-    public ChoiceButton<T, C> setCurrent(BiFunction<T, ChoiceButton<T, C>, ItemStack> stack) {
+    public ChoiceButton<T, C> setStack(BiFunction<T, ChoiceButton<T, C>, ItemStack> stack) {
         this.itemStack = stack;
         return this;
     }
@@ -130,19 +125,18 @@ public class ChoiceButton<T extends IGui<T>, C> implements IButton<T, ChoiceButt
         return parent;
     }
 
-    @Override
-    public C getValue() {
+    public int getChoiceIndex() {
+        return currentIndex;
+    }
+
+    public C getChoice() {
         return currentChoice;
     }
 
-    @Override
-    public void setValue(C value) {
-        this.currentChoice = value;
-        if (!hasChoice(value)) addChoice(value);
-    }
-
-    public int getValueIndex() {
-        return currentIndex;
+    public void setChoice(C choice) {
+        if (!hasChoice(choice)) choices.add(choice);
+        this.currentIndex = choices.indexOf(choice);
+        this.currentChoice = choice;
     }
 
     public boolean hasChoice(C choice) {
@@ -166,9 +160,11 @@ public class ChoiceButton<T extends IGui<T>, C> implements IButton<T, ChoiceButt
         else if (choices.isEmpty()) {
             this.currentIndex = -1;
             this.currentChoice = null;
+            this.startingChoice = null;
         } else {
             this.currentIndex = 0;
             this.currentChoice = choices.get(0);
+            this.startingChoice = currentChoice;
         }
         this.choices = choices;
     }
@@ -178,18 +174,21 @@ public class ChoiceButton<T extends IGui<T>, C> implements IButton<T, ChoiceButt
         if (currentChoice == null) {
             this.currentIndex = -1;
             this.currentChoice = null;
+            this.startingChoice = null;
         //We know the current choice isnt null, now we check if the choice is in the new given choices list. If it is,
         //we will set the current index to the index of the new current choice and set this buttons current choice to
         //the new current choice.
         } else if (choices.contains(currentChoice)) {
             this.currentIndex = choices.indexOf(currentChoice);
             this.currentChoice = currentChoice;
+            this.startingChoice = currentChoice;
         //If the choices list is empty or if it doesnt contain the new current choice, we need to add the new current
         // choice to it since it is selected.
         } else {
             choices.add(currentChoice);
             this.currentIndex = choices.indexOf(currentChoice);
             this.currentChoice = currentChoice;
+            this.startingChoice = currentChoice;
         }
         this.choices = choices;
     }
@@ -198,15 +197,13 @@ public class ChoiceButton<T extends IGui<T>, C> implements IButton<T, ChoiceButt
         if (index < 0 || index >= choices.size()) {
             this.currentIndex = -1;
             this.currentChoice = null;
+            this.startingChoice = null;
         } else {
             this.currentIndex = index;
             this.currentChoice = choices.get(index);
+            this.startingChoice = currentChoice;
         }
         this.choices = choices;
-    }
-
-    public void setLoopChoices(boolean loop) {
-        this.loopChoices = loop;
     }
 
     public boolean loopChoices() {

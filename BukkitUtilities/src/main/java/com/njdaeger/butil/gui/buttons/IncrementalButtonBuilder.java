@@ -15,6 +15,7 @@ import java.util.function.BiFunction;
 
 /**
  * An incremental Button Builder.
+ *
  * @param <T> The type of parent GUI
  */
 @SuppressWarnings("unused")
@@ -34,20 +35,20 @@ public final class IncrementalButtonBuilder<T extends IGui<T>> {
     private TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> decrement = (gui, button, event) -> {
         Player player = (Player) event.getWhoClicked();
         player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
-        button.setCurrent(itemStack);
+        button.setStack(itemStack);
         gui.update(player);
     };
     private TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> increment = decrement;
     private TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> hitMax = (gui, button, event) -> {
         Player player = (Player) event.getWhoClicked();
         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1, 1);
-        button.setCurrent(ItemBuilder.of(Material.BARRIER).displayName("Max is " + maximum).build());
+        button.setStack(ItemBuilder.of(Material.BARRIER).displayName("Max is " + maximum).build());
         gui.update(player);
     };
     private TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> hitMin = (gui, button, event) -> {
         Player player = (Player) event.getWhoClicked();
         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1, 1);
-        button.setCurrent(ItemBuilder.of(Material.BARRIER).displayName("Min is " + minimum).build());
+        button.setStack(ItemBuilder.of(Material.BARRIER).displayName("Min is " + minimum).build());
         gui.update(player);
     };
 
@@ -66,9 +67,9 @@ public final class IncrementalButtonBuilder<T extends IGui<T>> {
     }
 
     /**
-     * Specifies an ItemStack via an ItemStack
+     * Specifies an ItemStack via an ItemStack Object
      *
-     * @param itemStack The ItemStack to set
+     * @param itemStack The ItemStack to set for this button
      */
     public IncrementalButtonBuilder<T> itemStack(ItemStack itemStack) {
         Validate.notNull(itemStack, "A non-null ItemStack must be provided.");
@@ -222,8 +223,8 @@ public final class IncrementalButtonBuilder<T extends IGui<T>> {
         Validate.isTrue(start >= minimum && start <= maximum, "Start must be within the minimum and maximum bounds.");
 
         IncrementalButton<T> button = new IncrementalButton<>(minimum, maximum, start, step, shiftStep);
-        button.setCurrent(itemStack);
-        button.setValue(start);
+        button.setStack(itemStack);
+        button.setIndex(start);
         button.onIncrement(incrementWhen, increment);
         button.onDecrement(decrementWhen, decrement);
         button.onMax(hitMax);

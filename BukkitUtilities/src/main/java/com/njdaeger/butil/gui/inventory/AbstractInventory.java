@@ -141,7 +141,7 @@ public abstract class AbstractInventory<T extends IGui<T>> implements IGui<T> {
         inventory.clear();
         for (IButton<T, ?> slot : slots) {
             if (slot != null) {
-                inventory.setItem(slot.getSlot(), slot.getCurrent());
+                inventory.setItem(slot.getSlot(), slot.getStack());
             }
         }
     }

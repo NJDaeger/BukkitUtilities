@@ -8,6 +8,8 @@ public final class ButtonBuilder {
         return new IncrementalButtonBuilder<>();
     }
 
-
+    public static <T extends IGui<T>, C> ChoiceButtonBuilder<T, C> choice(Class<T> type, Class<C> choice) {
+        return new ChoiceButtonBuilder<>();
+    }
 
 }

@@ -8,6 +8,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,6 +55,10 @@ public final class ItemBuilder {
         meta.setLore(lore);
         stack.setItemMeta(meta);
         return this;
+    }
+
+    public ItemBuilder lore(Supplier<List<String>> lore) {
+        return lore(lore.get());
     }
 
     public ItemBuilder itemFlags(ItemFlag... flags) {

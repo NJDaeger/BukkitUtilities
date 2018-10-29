@@ -18,7 +18,7 @@ public interface IButton<T extends IGui<T>, S extends IButton<T, S>> {
      *
      * @return This slots current item
      */
-    ItemStack getCurrent();
+    ItemStack getStack();
 
     /**
      * Sets the new item function for the slot.
@@ -26,7 +26,7 @@ public interface IButton<T extends IGui<T>, S extends IButton<T, S>> {
      * @param stack The new item function for this slot.
      * @return This button
      */
-    S setCurrent(BiFunction<T, S, ItemStack> stack);
+    S setStack(BiFunction<T, S, ItemStack> stack);
 
     /**
      * Will move this button over to a new slot. Optionally keeping all its current values.<p> This will replace any
@@ -76,8 +76,8 @@ public interface IButton<T extends IGui<T>, S extends IButton<T, S>> {
      * @param stack The new itemstack for this slot
      * @return This button
      */
-    default S setCurrent(ItemStack stack) {
-        return setCurrent((gui, button) -> stack);
+    default S setStack(ItemStack stack) {
+        return setStack((gui, button) -> stack);
     }
 
     /**

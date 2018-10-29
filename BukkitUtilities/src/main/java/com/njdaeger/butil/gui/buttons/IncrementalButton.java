@@ -2,15 +2,14 @@ package com.njdaeger.butil.gui.buttons;
 
 import com.njdaeger.butil.TriConsumer;
 import com.njdaeger.butil.TriPredicate;
-import com.njdaeger.butil.gui.IGui;
 import com.njdaeger.butil.gui.IButton;
-import com.njdaeger.butil.gui.IValueHolder;
+import com.njdaeger.butil.gui.IGui;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.function.BiFunction;
 
-public class IncrementalButton<T extends IGui<T>> implements IButton<T, IncrementalButton<T>>, IValueHolder<Integer> {
+public class IncrementalButton<T extends IGui<T>> implements IButton<T, IncrementalButton<T>> {
 
     private TriPredicate<T, IncrementalButton<T>, InventoryClickEvent> decrementWhen;
     private TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> onDecrement;
@@ -53,18 +52,34 @@ public class IncrementalButton<T extends IGui<T>> implements IButton<T, Incremen
         this.onDecrement = decrement;
     }
 
+    /**
+     * Get the current button index value.
+     * @return The current button index value.
+     */
+    public Integer getIndex() {
+        return currentValue;
+    }
+
+    /**
+     * Set the current button index value.
+     * @param value The new current button index value.
+     */
+    public void setIndex(Integer value) {
+        this.currentValue = value;
+    }
+
     @Override
     public void setParentGui(T gui) {
         this.parent = gui;
     }
 
     @Override
-    public ItemStack getCurrent() {
+    public ItemStack getStack() {
         return itemStack.apply(parent, this);
     }
 
     @Override
-    public IncrementalButton<T> setCurrent(BiFunction<T, IncrementalButton<T>, ItemStack> stack) {
+    public IncrementalButton<T> setStack(BiFunction<T, IncrementalButton<T>, ItemStack> stack) {
         this.itemStack = stack;
         return this;
     }
@@ -101,16 +116,6 @@ public class IncrementalButton<T extends IGui<T>> implements IButton<T, Incremen
     @Override
     public T getParent() {
         return parent;
-    }
-
-    @Override
-    public Integer getValue() {
-        return currentValue;
-    }
-
-    @Override
-    public void setValue(Integer value) {
-        this.currentValue = value;
     }
 
     private boolean withinBounds() {
