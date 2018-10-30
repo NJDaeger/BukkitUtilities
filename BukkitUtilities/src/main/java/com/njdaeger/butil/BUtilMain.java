@@ -26,48 +26,20 @@ public class BUtilMain extends JavaPlugin {
             .itemStack((gui, button) -> ItemBuilder.of(Material.BEDROCK)
                     .displayName("Choice: " + (button.getChoiceIndex() + 1) + "/" + button.getChoices().size())
                     .lore(() -> {
-                        /*
-                        size = 10;
-                        skip
-
-                        0, 1, 2, 3, 4, 5, 6, 7, 8, 9
-
-                        index = 4;
-                        index > 0 && index < 9; skip = 3
-
-                        index = 5;
-                        index > 0 && index < 9; skip = 4
-
-                        index = 8;
-                        index > 0 && index < 9; skip = 7
-
-                        index = 9;
-                        index >= 9; skip = 7
-
-                        index = 0;
-                        skip = 0;
-
-                        index = 1;
-                        index > 0 && index < 9; skip = 0
-
-                        index = 2;
-                        index > 0 && index < 9; slip = 1
-
-                         */
                         int skip;
                         int size = button.getChoices().size();
                         int index = button.getChoiceIndex();
-                        if (index > 0 && index < size-1) skip = index-1;
-                        else if (index >= size-1) skip = size-3;
+                        if (index > 0 && index < size - 1) skip = index - 1;
+                        else if (index >= size - 1) skip = size - 3;
                         else skip = 0;
-                        return button.getChoices().stream().skip(skip).limit(3).map(s -> {
-                            if (button.getChoice().equals(s)) return ChatColor.BOLD + s;
-                            else return s;
-                        }).collect(Collectors.toList());
+                        return button.getChoices()
+                                .stream()
+                                .skip(skip)
+                                .limit(3)
+                                .map(s -> button.isSelected(s) ? ChatColor.BOLD + s : s)
+                                .collect(Collectors.toList());
                     }).build())
             .choices("Hello", "Bork", "Poop", "number4", "number5", "tenise")
-            .start("Hello")
-            .loopChoices()
             .build();
 
     @Override

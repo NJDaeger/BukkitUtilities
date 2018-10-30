@@ -5,15 +5,16 @@ import com.njdaeger.butil.TriConsumer;
 import com.njdaeger.butil.TriPredicate;
 import com.njdaeger.butil.gui.IGui;
 import org.apache.commons.lang.Validate;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,10 +31,11 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
     private C startingChoice;
     private List<C> choices;
     private int startIndex;
-    private int shiftIndex;
-    private int index;
+    private int shiftIndex = 2;
+    private int index = 1;
 
     //Actions
+    private Function<C, String> nameMapper;
     private BiFunction<T, ChoiceButton<T, C>, ItemStack> itemStack;
     private TriPredicate<T, ChoiceButton<T, C>, InventoryClickEvent> previousWhen = (gui, button, event) -> event.getClick().isRightClick();
     private TriPredicate<T, ChoiceButton<T, C>, InventoryClickEvent> nextWhen = (gui, button, event) -> event.getClick().isLeftClick();
@@ -47,7 +49,14 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
     private TriConsumer<T, ChoiceButton<T, C>, InventoryClickEvent> onMinChoice = (gui, button, event) -> {
         Player player = (Player) event.getWhoClicked();
         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1, 1);
-        button.setStack(itemStack);
+        button.setStack(ItemBuilder.of(Material.BARRIER)
+                .displayName("Choice: " + (button.getChoiceIndex() + 1) + "/" + choices.size())
+                .lore(choices.stream()
+                        .limit(3)
+                        .map(C::toString)
+                        .map(s -> button.isSelected((C) s) ? ChatColor.BOLD + s : s)
+                        .collect(Collectors.toList()))
+                .build());
         gui.update(player);
     };
     private TriConsumer<T, ChoiceButton<T, C>, InventoryClickEvent> onMaxChoice = (gui, button, event) -> {
@@ -55,7 +64,12 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1, 1);
         ItemStack stack = ItemBuilder.of(Material.BARRIER)
                 .displayName("Choice: " + (button.getChoiceIndex() + 1) + "/" + choices.size())
-                .lore(choices.stream().sorted(Collections.reverseOrder()).limit(3).map(Object::toString).collect(Collectors.toList()))
+                .lore(choices.stream()
+                        .skip(choices.size() - 3)
+                        .limit(3)
+                        .map(C::toString)
+                        .map(s -> button.isSelected((C) s) ? ChatColor.BOLD + s : s)
+                        .collect(Collectors.toList()))
                 .build();
         button.setStack(stack);
         gui.update(player);
@@ -86,6 +100,11 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
         return this;
     }
 
+    public ChoiceButtonBuilder<T, C> nameMapper(Function<C, String> nameMapper) {
+        this.nameMapper = nameMapper;
+        return this;
+    }
+
     /**
      * Whether to loop the choices of this button. by default, looping is disabled, so when we cant go any higher or
      * lower in the list of choices, the correct {@link ChoiceButtonBuilder#onMaxChoice(TriConsumer)} and {@link
@@ -101,6 +120,7 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
 
     /**
      * Provides a list of choices for this choice button. The given value cannot be null.
+     *
      * @param choices The array of choices to allow for this choice button.
      */
     public ChoiceButtonBuilder<T, C> choices(C... choices) {
