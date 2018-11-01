@@ -1,6 +1,7 @@
 package com.njdaeger.butil.gui.buttons;
 
 import com.njdaeger.butil.ItemBuilder;
+import com.njdaeger.butil.Pair;
 import com.njdaeger.butil.TriConsumer;
 import com.njdaeger.butil.TriPredicate;
 import com.njdaeger.butil.gui.IGui;
@@ -15,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,8 +37,25 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
     private int index = 1;
 
     //Actions
-    private Function<C, String> nameMapper;
-    private BiFunction<T, ChoiceButton<T, C>, ItemStack> itemStack;
+    private Material material = Material.ARMOR_STAND;
+    private Function<C, String> nameMapper = C::toString;
+    private BiFunction<T, ChoiceButton<T, C>, List<String>> loreFunction = (gui, button) -> {
+        int skip;
+        int size = button.getChoices().size();
+        int index = button.getChoiceIndex();
+        if (index > 0 && index < size - 1) skip = index - 1;
+        else if (index >= size - 1) skip = size - 3;
+        else skip = 0;
+        return button.getChoices()
+                .stream()
+                .skip(skip)
+                .limit(3)
+                .map(obj -> new Pair<>(obj, nameMapper.apply(obj)))
+                .map(pair -> button.isSelected(pair.getFirst()) ? ChatColor.BOLD + pair.getSecond() : pair.getSecond())
+                .collect(Collectors.toList());};
+    private BiFunction<T, ChoiceButton<T, C>, ItemStack> itemStack = (gui, button) -> ItemBuilder.of(material)
+            .displayName("Choice: " + (button.getChoiceIndex() + 1) + "/" + button.getChoices().size())
+            .lore(loreFunction.apply(gui, button)).build();
     private TriPredicate<T, ChoiceButton<T, C>, InventoryClickEvent> previousWhen = (gui, button, event) -> event.getClick().isRightClick();
     private TriPredicate<T, ChoiceButton<T, C>, InventoryClickEvent> nextWhen = (gui, button, event) -> event.getClick().isLeftClick();
     private TriConsumer<T, ChoiceButton<T, C>, InventoryClickEvent> onPrevious = (gui, button, event) -> {
@@ -53,7 +72,7 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
                 .displayName("Choice: " + (button.getChoiceIndex() + 1) + "/" + choices.size())
                 .lore(choices.stream()
                         .limit(3)
-                        .map(C::toString)
+                        .map(nameMapper == null ? C::toString : nameMapper)
                         .map(s -> button.isSelected((C) s) ? ChatColor.BOLD + s : s)
                         .collect(Collectors.toList()))
                 .build());
@@ -67,7 +86,7 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
                 .lore(choices.stream()
                         .skip(choices.size() - 3)
                         .limit(3)
-                        .map(C::toString)
+                        .map(nameMapper == null ? C::toString : nameMapper)
                         .map(s -> button.isSelected((C) s) ? ChatColor.BOLD + s : s)
                         .collect(Collectors.toList()))
                 .build();
@@ -99,10 +118,17 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
         this.itemStack = (gui, button) -> itemStack;
         return this;
     }
-
-    public ChoiceButtonBuilder<T, C> nameMapper(Function<C, String> nameMapper) {
-        this.nameMapper = nameMapper;
-        return this;
+    
+    public ChoiceButtonBuilder<T, C> itemStack(Material material) {
+    
+    }
+    
+    public ChoiceButtonBuilder<T, C> itemStack(Material material, Function<C, String> nameMapper) {
+    
+    }
+    
+    public ChoiceButtonBuilder<T, C> itemStack(Material material, Supplier<List<String>> loreSupplier) {
+    
     }
 
     /**
