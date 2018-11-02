@@ -8,8 +8,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -18,13 +16,17 @@ public final class ItemBuilder {
 
     private ItemStack stack;
 
-    private ItemBuilder(Material material) {
-        this.stack = new ItemStack(material);
-
+    private ItemBuilder(ItemStack stack) {
+        this.stack = stack;
     }
 
+
     public static ItemBuilder of(Material material) {
-        return new ItemBuilder(material);
+        return new ItemBuilder(new ItemStack(material));
+    }
+
+    public static ItemBuilder of(ItemStack stack) {
+        return new ItemBuilder(stack);
     }
 
     public ItemBuilder amount(int amount) {
@@ -47,6 +49,7 @@ public final class ItemBuilder {
     }
 
     public ItemBuilder lore(String... lore) {
+        if (lore == null) return lore((List<String>) null);
         return lore(Stream.of(lore).map(line -> ChatColor.WHITE + line).collect(Collectors.toList()));
     }
 

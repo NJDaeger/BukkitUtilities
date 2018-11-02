@@ -98,12 +98,11 @@ public class ChoiceButton<T extends IGui<T>, C> implements IButton<T, ChoiceButt
             //looping choices, we will subtract the current size of choices from the possible index to get the next
             //index, otherwise we will get the size of choices minus 1.
             nextIndex = possibleIndex < choices.size() ? possibleIndex : loopChoices ? possibleIndex - choices.size() : choices.size() - 1;
-            System.out.println(nextIndex);
+
             //Setting the values in and accepting the consumer
             this.currentIndex = nextIndex;
             this.currentChoice = choices.get(nextIndex);
             if (onNext != null) onNext.accept(parent, this, event);
-            System.out.println("up");
         }
         if (previousWhen.test(parent, this, event)) {
             //Get the possible index by subtracting the shift to the current index
@@ -113,15 +112,11 @@ public class ChoiceButton<T extends IGui<T>, C> implements IButton<T, ChoiceButt
             //we must check if we are looping choices or not. If we are looping choices, we will add the possible index
             //to the size of choices (minus 1), to get the next index, otherwise we just assume the next index is 0.
             nextIndex = possibleIndex >= 0 ? possibleIndex : loopChoices ? choices.size() + possibleIndex : 0;
-            System.out.println(nextIndex);
 
             this.currentIndex = nextIndex;
             this.currentChoice = choices.get(nextIndex);
             if (onPrevious != null) onPrevious.accept(parent, this, event);
-            System.out.println("down");
         }
-        System.out.println(currentChoice);
-        System.out.println(currentIndex);
         if (!loopChoices && currentIndex == choices.size()-1 && onMaxChoice != null) onMaxChoice.accept(parent, this, event);
         if (!loopChoices && currentIndex == 0 && onMinChoice != null) onMinChoice.accept(parent, this, event);
     }
