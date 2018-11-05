@@ -12,4 +12,8 @@ public final class ButtonBuilder {
         return new ChoiceButtonBuilder<>();
     }
 
+    public static <T extends IGui<T>> StandardButtonBuilder<T> standard(Class<T> type) {
+        return new StandardButtonBuilder<>();
+    }
+
 }
