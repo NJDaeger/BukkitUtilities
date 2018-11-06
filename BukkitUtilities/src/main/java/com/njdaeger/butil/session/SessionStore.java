@@ -70,7 +70,21 @@ public final class SessionStore {
         if (!hasNamespace(name)) return null;
         return (SessionNamespace<?, T>)namespaces.get(name);
     }
-    
+
+    /**
+     * Gets a namespace
+     * @param name The name of the namespace
+     * @param holdsType The type of data the session holds
+     * @param sessionType The type of session the namespace holds
+     * @param <T> The type of data being held
+     * @param <S> The type of session the namespace holds
+     * @return The namespace if it exists, null otherwise
+     */
+    public <T, S extends ISession<T, S>> SessionNamespace<T, S> getNamespace(String name, Class<T> holdsType, Class<T> sessionType) {
+        if (!hasNamespace(name)) return null;
+        return (SessionNamespace<T, S>) namespaces.get(name);
+    }
+
     /**
      * Adds a namespace to the session store
      * @param namespace The namespace to add
@@ -94,7 +108,18 @@ public final class SessionStore {
         namespaces.put(namespace, new SessionNamespace<>(namespace));
         return true;
     }
-    
+
+    /**
+     * Adds a namespace to the session store
+     * @param namespace The namespace to add
+     * @return True if it was successfully added, false if it exists or was not successfully added.
+     */
+    public boolean addNamespace(SessionNamespace<?, ?> namespace) {
+        if (hasNamespace(namespace.getNamespace())) return false;
+        namespaces.put(namespace.getNamespace(), namespace);
+        return true;
+    }
+
     /**
      * Removes a namepsace
      * @param namespace The name of the namespace

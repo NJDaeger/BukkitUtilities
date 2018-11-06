@@ -16,4 +16,8 @@ public final class ButtonBuilder {
         return new StandardButtonBuilder<>();
     }
 
+    public static <T extends IGui<T>> BooleanButtonBuilder<T> bool(Class<T> type) {
+        return new BooleanButtonBuilder<>();
+    }
+
 }

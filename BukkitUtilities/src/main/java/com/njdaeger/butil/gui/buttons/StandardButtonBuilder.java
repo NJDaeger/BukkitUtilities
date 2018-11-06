@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.function.BiFunction;
 
-public class StandardButtonBuilder<T extends IGui<T>> {
+public final class StandardButtonBuilder<T extends IGui<T>> {
 
     private TriConsumer<T, StandardButton<T>, InventoryClickEvent> onClick = (gui, button, event) -> {
         Player player = (Player) event.getWhoClicked();

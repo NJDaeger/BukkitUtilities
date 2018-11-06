@@ -83,6 +83,18 @@ public final class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder unenchant(Enchantment enchantment) {
+        stack.removeEnchantment(enchantment);
+        return this;
+    }
+
+    public ItemBuilder clearEnchants() {
+        for(Enchantment e : stack.getEnchantments().keySet()) {
+            stack.removeEnchantment(e);
+        }
+        return this;
+    }
+
     public ItemStack build() {
         return stack;
     }
