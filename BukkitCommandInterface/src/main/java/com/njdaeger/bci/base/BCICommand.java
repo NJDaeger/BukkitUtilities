@@ -289,6 +289,11 @@ public class BCICommand<C extends AbstractCommandContext<C, T>, T extends Abstra
         
     }
 
+    /**
+     * The main tab completing method. Runs the tab completer
+     * @param context The tab context
+     * @return The list of all the possible completions
+     */
     public List<String> complete(T context) {
         
         try {

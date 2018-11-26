@@ -283,7 +283,79 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
     public boolean isLength(int length) {
         return args.length == length;
     }
-    
+
+    /**
+     * Gets the first argument in the argument array
+     * @return The first argument in the argument array, or null if there are no arguments
+     */
+    public String first() {
+        return argAt(0);
+    }
+
+    public <P extends ParsedType<V>, V> V first(Class<P> asType) throws BCIException {
+        if (first() != null) {
+            try {
+                return asType.getDeclaredConstructor().newInstance().parse(first());
+            }
+            catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                e.printStackTrace();
+            }
+        }
+        throw new ArgumentParseException("Argument at index 0 is not parsable to the type " + asType.getSimpleName());
+    }
+
+    public <P extends ParsedType<V>, V> V first(Class<P> asType, V defaultValue) {
+        try {
+            return isArgAt(0 ,asType) ? argAt(0, asType) : defaultValue;
+        }
+        catch (BCIException ignored) {}
+        return defaultValue;
+    }
+
+    /**
+     * Gets the last argument in the argument array
+     * @return The last argument in the argument array, or null if there are no arguments
+     */
+    public String last() {
+        return argAt(args.length-1);
+    }
+
+    /**
+     * Gets the last argument in the argument array as a specific type.
+     * @param asType The argument parser type
+     * @param <P> The ParsedType
+     * @param <V> The value returned
+     * @return The parsed argument as the specified value
+     * @throws BCIException If the argument at the specified index is not parsable to the specified type, or if the last arg is null.
+     */
+    public <P extends ParsedType<V>, V> V last(Class<P> asType) throws BCIException {
+        if (last() != null) {
+            try {
+                return asType.getDeclaredConstructor().newInstance().parse(last());
+            }
+            catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                e.printStackTrace();
+            }
+        }
+        throw new ArgumentParseException("Argument at index " + args.length + " is not parsable to the type " + asType.getSimpleName());
+    }
+
+    /**
+     * Gets the last argument in the argument array as a specific type
+     * @param asType The argument parser type
+     * @param defaultValue The value to return if the argument is not parsable
+     * @param <P> The ParsedType
+     * @param <V> The value returned
+     * @return The parsed argument if it is parsable, the default argument is returned otherwise.
+     */
+    public <P extends ParsedType<V>, V> V last(Class<P> asType, V defaultValue) {
+        try {
+            return isArgAt(args.length-1 ,asType) ? argAt(args.length-1, asType) : defaultValue;
+        }
+        catch (BCIException ignored) {}
+        return defaultValue;
+    }
+
     /**
      * Gets the argument at the desired index parsed as the specified type
      * @param index The index to parse

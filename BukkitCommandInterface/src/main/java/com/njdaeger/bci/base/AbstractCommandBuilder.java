@@ -19,7 +19,11 @@ public abstract class AbstractCommandBuilder<C extends AbstractCommandContext<C,
     public AbstractCommandBuilder(String name) {
         this.command = new BCICommand<>(name);
     }
-    
+
+    /**
+     * Adds a flag which is allowed to be used in this command.
+     * @param flag The flag object to be used
+     */
     public B flag(AbstractFlag<?> flag) {
         command.addFlag(flag);
         return (B)this;

@@ -6,12 +6,30 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+/**
+ * Represents a specific sender type
+ */
 public enum SenderType {
-    
+
+    /**
+     * Represents the console command sender type
+     */
     CONSOLE,
+    /**
+     * Represents the player command sender type
+     */
     PLAYER,
+    /**
+     * Represents the entity command sender type
+     */
     ENTITY,
+    /**
+     * Represents the block command sender type
+     */
     BLOCK,
+    /**
+     * Represents an unknown command sender type
+     */
     UNKNOWN;
     
     public static SenderType of(CommandSender sender) {

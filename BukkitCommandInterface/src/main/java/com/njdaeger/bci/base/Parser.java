@@ -10,7 +10,11 @@ import java.util.regex.Matcher;
 public final class Parser {
     
     private Parser() {}
-    
+
+    /**
+     * Parses the flags from the command
+     * @param command The command context
+     */
     static void parseFlags(AbstractCommandContext<?, ?> command) {
         List<LiveFlag> currentFlags = new ArrayList<>();
         
