@@ -34,21 +34,38 @@ public final class LiveFlag {
     }
 
     /**
+     * Whether this flag is a valid and complete flag. A flag is not complete if any of the following are true: <p>
+     *     1. The flag is a split flag and there are no characters after the splitter character<p>
+     *     2. The flag is supposed to have a following value and there isn't one.
+     * @return True if none of the conditions are met above, false otherwise.
+     */
+    public boolean isValid() {
+        return getRawValue() != null;
+    }
+
+    /**
      * Gets the raw value of this flag. If this flag is a split flag, this will return the value after the given
      * splitter. If this value is a standard flag with a following value, it returns the following value. In all other
      * conditions, it returns {@link AbstractFlag#getRawFlag()}
      *
-     * @return The value of this flag.
+     * @return The value of this flag. Or null if the argument to be split does not have a character after the splitter,
+     *         or if the following value does not exist.
      */
     public String getRawValue() {
         if (flag.isSplitFlag()) {
-            return separatedFlag.split(String.valueOf(flag.getSplitter().charValue()))[1];
-        } else if (flag.hasFollowingValue()) return separatedFlag.split(" ")[1];
-        else return flag.getRawFlag();
+            String[] split = separatedFlag.split(String.valueOf(flag.getSplitter().charValue()));
+            if (split.length <= 1) return null;
+            else return split[1];
+        } else if (flag.hasFollowingValue()) {
+            String[] split = separatedFlag.split(" ");
+            if (split.length <= 1) return null;
+            return split[1];
+        } else return flag.getRawFlag();
     }
 
     /**
      * This flag as a boolean
+     *
      * @return The boolean value of this flag
      * @throws BCIException If it was unable to be parsed to a boolean
      */
@@ -58,6 +75,7 @@ public final class LiveFlag {
 
     /**
      * This flag as an integer
+     *
      * @return The integer value of this flag
      * @throws BCIException If it was unable to be parsed as an integer
      */
@@ -67,6 +85,7 @@ public final class LiveFlag {
 
     /**
      * This flag as a double
+     *
      * @return The double value of this flag
      * @throws BCIException If it was unable to be parsed as a double
      */
@@ -76,6 +95,7 @@ public final class LiveFlag {
 
     /**
      * This flag as a float
+     *
      * @return The float value of this flag
      * @throws BCIException If it was unable to be parsed as a float
      */
@@ -85,6 +105,7 @@ public final class LiveFlag {
 
     /**
      * The flag as a string
+     *
      * @return The string value of this flag
      * @throws BCIException If it was unable to be parsed as a string
      */
