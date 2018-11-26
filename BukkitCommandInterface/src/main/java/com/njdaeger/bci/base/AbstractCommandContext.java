@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 @SuppressWarnings({"unused", "WeakerAccess", "unchecked"})
 public abstract class AbstractCommandContext<C extends AbstractCommandContext<C, T>, T extends AbstractTabContext<C, T>> {
     
-    private final Map<Character, LiveFlag> flags;
+    private final Map<String, LiveFlag> flags;
     protected final BCICommand<C, T> command;
     protected final CommandSender sender;
     protected final Plugin plugin;
@@ -68,7 +68,7 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
      * @param flag The flag to attempt to get
      * @return The LiveFlag, unless the flag doesnt exist, in that case it's null.
      */
-    public LiveFlag getFlag(char flag) {
+    public LiveFlag getFlag(String flag) {
         return flags.get(flag);
     }
     
@@ -77,13 +77,13 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
      * @param flag The flag to check
      * @return True if the flag was within the command, false otherwise.
      */
-    public boolean hasFlag(char flag) {
+    public boolean hasFlag(String flag) {
         return flags.get(flag) != null;
     }
 
     //This is used to set the flags used in this particular command execution
     void setFlags(List<LiveFlag> flags) {
-        flags.forEach(f -> this.flags.put(f.getFlag().getFlagCharacter(), f));
+        flags.forEach(f -> this.flags.put(f.getFlag().getFlagString(), f));
     }
     
     //This is used to set the arguments after the flags and their parts have been excluded.

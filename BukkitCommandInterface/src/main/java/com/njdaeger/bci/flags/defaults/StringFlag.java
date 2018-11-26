@@ -5,12 +5,16 @@ import com.njdaeger.bci.types.defaults.StringType;
 
 public final class StringFlag extends AbstractFlag<StringType> {
     
-    public StringFlag(char flagCharacter, Character splitter) {
-        super(flagCharacter, splitter);
+    public StringFlag(String flag, Character splitter) {
+        super(flag, splitter);
     }
-    
-    public StringFlag(char flagCharacter) {
-        super(flagCharacter);
+
+    public StringFlag(String prefix, String flag) {
+        super(prefix, flag);
+    }
+
+    public StringFlag(String flag) {
+        super("-", flag);
     }
     
     @Override

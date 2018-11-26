@@ -25,7 +25,7 @@ public class BCICommand<C extends AbstractCommandContext<C, T>, T extends Abstra
     private SenderType[] senderTypes = null;
     private TabExecutor<T> tabExecutor = null;
     private CommandExecutor<C> commandExecutor = null;
-    private final Map<Character, AbstractFlag<?>> flags = new HashMap<>();
+    private final Map<String, AbstractFlag<?>> flags = new HashMap<>();
     
     /**
      * Creates a new BCICommand object
@@ -48,14 +48,14 @@ public class BCICommand<C extends AbstractCommandContext<C, T>, T extends Abstra
      * @param flag The flag to add
      */
     public void addFlag(AbstractFlag<?> flag) {
-        flags.put(flag.getFlagCharacter(), flag);
+        flags.put(flag.getFlagString(), flag);
     }
     
     /**
      * Removes a flag from this command
      * @param flag The flag to remove
      */
-    public void removeFlag(char flag) {
+    public void removeFlag(String flag) {
         flags.remove(flag);
     }
     
@@ -64,7 +64,7 @@ public class BCICommand<C extends AbstractCommandContext<C, T>, T extends Abstra
      * @param flag The flag to check
      * @return True if this command can have the particular flag
      */
-    public boolean hasFlag(char flag) {
+    public boolean hasFlag(String flag) {
         return flags.containsKey(flag);
     }
     

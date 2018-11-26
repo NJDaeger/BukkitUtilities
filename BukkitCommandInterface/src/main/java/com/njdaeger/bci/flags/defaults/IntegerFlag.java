@@ -5,12 +5,16 @@ import com.njdaeger.bci.types.defaults.IntegerType;
 
 public final class IntegerFlag extends AbstractFlag<IntegerType> {
     
-    public IntegerFlag(char flagCharacter, Character splitter) {
-        super(flagCharacter, splitter);
+    public IntegerFlag(String flag, Character splitter) {
+        super(flag, splitter);
     }
-    
-    public IntegerFlag(char flagCharacter) {
-        super(flagCharacter);
+
+    public IntegerFlag(String prefix, String flag) {
+        super(prefix, flag);
+    }
+
+    public IntegerFlag(String flag) {
+        super("-", flag);
     }
     
     @Override

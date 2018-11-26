@@ -5,12 +5,16 @@ import com.njdaeger.bci.types.defaults.FloatType;
 
 public final class FloatFlag extends AbstractFlag<FloatType> {
     
-    public FloatFlag(char flagCharacter, Character splitter) {
-        super(flagCharacter, splitter);
+    public FloatFlag(String flag, Character splitter) {
+        super(flag, splitter);
     }
-    
-    public FloatFlag(char flagCharacter) {
-        super(flagCharacter);
+
+    public FloatFlag(String prefix, String flag) {
+        super(prefix, flag);
+    }
+
+    public FloatFlag(String flag) {
+        super("-", flag);
     }
     
     @Override

@@ -4,13 +4,17 @@ import com.njdaeger.bci.flags.AbstractFlag;
 import com.njdaeger.bci.types.defaults.BooleanType;
 
 public final class BooleanFlag extends AbstractFlag<BooleanType> {
-    
-    public BooleanFlag(char flagCharacter, Character splitter) {
-        super(flagCharacter, splitter);
+
+    public BooleanFlag(String flag, Character splitter) {
+        super(flag, splitter);
     }
-    
-    public BooleanFlag(char flagCharacter) {
-        super(flagCharacter);
+
+    public BooleanFlag(String prefix, String flag) {
+        super(prefix, flag);
+    }
+
+    public BooleanFlag(String flag) {
+        super("-", flag);
     }
     
     @Override
