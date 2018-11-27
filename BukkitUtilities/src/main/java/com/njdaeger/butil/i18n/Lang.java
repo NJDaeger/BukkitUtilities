@@ -37,7 +37,7 @@ public class Lang<M extends Enum<M> & Translatable> {
             Map<M, String> keys = new HashMap<>();
             YamlConfiguration lang = YamlConfiguration.loadConfiguration(file);
             for (M key : enumClass.getEnumConstants()) {
-                if (!lang.contains(key.getKey())) {
+                if (lang.get(key.getKey()) == null) {
                     if (loadStatus != LoadStatus.WARNING) loadStatus = LoadStatus.WARNING;
                     Bukkit.getLogger().warning("Could not find key \"" + key.getKey() + "\" in " + file.getName());
                 } else keys.put(key, key.format(lang.getString(key.getKey())));
