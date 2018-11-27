@@ -311,7 +311,7 @@ public abstract class AbstractTabContext<C extends AbstractCommandContext<C, T>,
      * @return The current arg being typed
      */
     public String getCurrent() {
-        return isLength(0) ? null : argAt(getLength() - 1);
+        return isLength(1) ? null : argAt(getLength() - 1);
     }
 
     /**
@@ -428,7 +428,7 @@ public abstract class AbstractTabContext<C extends AbstractCommandContext<C, T>,
      * @param index The index to create the completions
      */
     public void playerCompletionAt(int index) {
-        if (isLength(index)) playerCompletion();
+        if (isLength(index+1)) playerCompletion();
     }
 
     /**
@@ -487,7 +487,7 @@ public abstract class AbstractTabContext<C extends AbstractCommandContext<C, T>,
      * @param completions The arguments to add to the completion list.
      */
     public void completionAt(int index, String... completions) {
-        if (isLength(index)) completion(completions);
+        if (isLength(index+1)) completion(completions);
     }
 
     /**
@@ -550,7 +550,7 @@ public abstract class AbstractTabContext<C extends AbstractCommandContext<C, T>,
      * @param function The function to apply
      */
     public void completionAt(int index, Function<T, List<String>> function) {
-        if (isLength(index)) completion(function);
+        if (isLength(index+1)) completion(function);
     }
 
     /**
@@ -631,7 +631,7 @@ public abstract class AbstractTabContext<C extends AbstractCommandContext<C, T>,
      * @throws BCIException If the completion was unsuccessful.
      */
     public boolean subCompletionAt(int index, TabExecutor<T> executor) throws BCIException {
-        if (isLength(index)) {
+        if (isLength(index+1)) {
             subCompletion(executor);
             return true;
         }
@@ -649,7 +649,7 @@ public abstract class AbstractTabContext<C extends AbstractCommandContext<C, T>,
      * @throws BCIException If the completion was unsuccessful.
      */
     public boolean subCompletionAt(int index, SenderType senderType, TabExecutor<T> executor) throws BCIException {
-        if (isLength(index)) {
+        if (isLength(index+1)) {
             return subCompletion(senderType, executor);
         }
         return false;
@@ -666,7 +666,7 @@ public abstract class AbstractTabContext<C extends AbstractCommandContext<C, T>,
      * @throws BCIException If the completion was unsuccessful
      */
     public boolean subCompletionAt(int index, Pattern pattern, TabExecutor<T> executor) throws BCIException {
-        if (isLength(index) && isPrevious(pattern)) {
+        if (isLength(index+1) && isPrevious(pattern)) {
             subCompletion(executor);
             return true;
         }
@@ -701,7 +701,7 @@ public abstract class AbstractTabContext<C extends AbstractCommandContext<C, T>,
      * @throws BCIException If the completion was unsuccessful
      */
     public boolean subCompletionAt(int index, boolean ignoreCase, String previousArg, TabExecutor<T> executor) throws BCIException {
-        if (isLength(index) && isPrevious(ignoreCase, previousArg)) {
+        if (isLength(index+1) && isPrevious(ignoreCase, previousArg)) {
             subCompletion(executor);
             return true;
         }
