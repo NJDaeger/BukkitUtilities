@@ -311,7 +311,7 @@ public abstract class AbstractTabContext<C extends AbstractCommandContext<C, T>,
      * @return The current arg being typed
      */
     public String getCurrent() {
-        return isLength(1) ? null : argAt(getLength() - 1);
+        return isLength(0) ? null : argAt(getLength() - 1);
     }
 
     /**
