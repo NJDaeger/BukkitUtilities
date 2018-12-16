@@ -22,11 +22,11 @@ import java.util.function.BiFunction;
 public final class IncrementalButtonBuilder<T extends IGui<T>> {
 
     //Properties
-    private int shiftStep = 1;
-    private int minimum = 0;
-    private int maximum = 20;
-    private int start = 0;
-    private int step = 5;
+    private double shiftStep = 1;
+    private double minimum = 0;
+    private double maximum = 20;
+    private double start = 0;
+    private double step = 5;
 
     //Actions
     private BiFunction<T, IncrementalButton<T>, ItemStack> itemStack;
@@ -82,7 +82,7 @@ public final class IncrementalButtonBuilder<T extends IGui<T>> {
      *
      * @param minimum The minimum value allowed for this button
      */
-    public IncrementalButtonBuilder<T> min(int minimum) {
+    public IncrementalButtonBuilder<T> min(double minimum) {
         this.minimum = minimum;
         return this;
     }
@@ -92,7 +92,7 @@ public final class IncrementalButtonBuilder<T extends IGui<T>> {
      *
      * @param maximum The maximum value allowed for this button
      */
-    public IncrementalButtonBuilder<T> max(int maximum) {
+    public IncrementalButtonBuilder<T> max(double maximum) {
         this.maximum = maximum;
         return this;
     }
@@ -103,7 +103,7 @@ public final class IncrementalButtonBuilder<T extends IGui<T>> {
      *
      * @param start The starting value for this button
      */
-    public IncrementalButtonBuilder<T> start(int start) {
+    public IncrementalButtonBuilder<T> start(double start) {
         this.start = start;
         return this;
     }
@@ -111,23 +111,23 @@ public final class IncrementalButtonBuilder<T extends IGui<T>> {
     /**
      * Set the step value for this incremental button. Whenever the increase or decrease event is activated, the button
      * will increase/decrease this specified amount. If the button was shift clicked, this value will not be used. The
-     * {@link IncrementalButtonBuilder#shiftStep(int)} value will be used instead. Default is 5.
+     * {@link IncrementalButtonBuilder#shiftStep(double)} value will be used instead. Default is 5.
      *
      * @param step How much to shift the button value whenever increased or decreased.
      */
-    public IncrementalButtonBuilder<T> step(int step) {
+    public IncrementalButtonBuilder<T> step(double step) {
         this.step = step;
         return this;
     }
 
     /**
      * Set the shift step value for this incremental button. Whenever the click is a shift click, the button will
-     * increase/decrease this specified amount. See {@link IncrementalButtonBuilder#step(int)} for more information on
+     * increase/decrease this specified amount. See {@link IncrementalButtonBuilder#step(double)} for more information on
      * this. Default is 1.
      *
      * @param shiftStep How much to shift the button value whenever shift clicked.
      */
-    public IncrementalButtonBuilder<T> shiftStep(int shiftStep) {
+    public IncrementalButtonBuilder<T> shiftStep(double shiftStep) {
         this.shiftStep = shiftStep;
         return this;
     }

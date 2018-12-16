@@ -18,15 +18,15 @@ public class IncrementalButton<T extends IGui<T>> implements IButton<T, Incremen
     private TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> onMax;
     private TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> onMin;
     private BiFunction<T, IncrementalButton<T>, ItemStack> itemStack;
-    private final int shiftStep;
-    private int currentValue;
-    private final int start;
-    private final int step;
-    private final int min;
-    private final int max;
+    private final double shiftStep;
+    private double currentValue;
+    private final double start;
+    private final double step;
+    private final double min;
+    private final double max;
     private T parent;
 
-    IncrementalButton(int min, int max, int start, int step, int shiftStep) {
+    IncrementalButton(double min, double max, double start, double step, double shiftStep) {
         this.shiftStep = shiftStep;
         this.start = start;
         this.step = step;
@@ -56,7 +56,7 @@ public class IncrementalButton<T extends IGui<T>> implements IButton<T, Incremen
      * Get the current button index value.
      * @return The current button index value.
      */
-    public Integer getIndex() {
+    public Double getIndex() {
         return currentValue;
     }
 
@@ -64,7 +64,7 @@ public class IncrementalButton<T extends IGui<T>> implements IButton<T, Incremen
      * Set the current button index value.
      * @param value The new current button index value.
      */
-    public void setIndex(Integer value) {
+    public void setIndex(Double value) {
         this.currentValue = value;
     }
 
@@ -95,7 +95,7 @@ public class IncrementalButton<T extends IGui<T>> implements IButton<T, Incremen
 
     @Override
     public final void onClick(InventoryClickEvent event) {
-        int shiftedValue = event.getClick().isShiftClick() ? shiftStep : step;
+        double shiftedValue = event.getClick().isShiftClick() ? shiftStep : step;
 
         if (withinBounds() && (decrementWhen == null || decrementWhen.test(parent, this, event))) {
             if (currentValue - shiftedValue < min) this.currentValue = min;
