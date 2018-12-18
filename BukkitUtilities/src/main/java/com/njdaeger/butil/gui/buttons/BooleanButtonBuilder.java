@@ -52,8 +52,8 @@ public final class BooleanButtonBuilder<T extends IGui<T>> {
         return itemStack(new ItemStack(material));
     }
 
-    public final BooleanButtonBuilder<T> selected() {
-        this.startingSelection = true;
+    public final BooleanButtonBuilder<T> selected(boolean selected) {
+        this.startingSelection = selected;
         return this;
     }
 

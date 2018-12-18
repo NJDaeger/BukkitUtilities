@@ -258,9 +258,11 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
      * and the button will loop and therefore never hitting the minimum or maximum choice. Eg. if enabled, and the
      * current choice is at index 0, and the player decides to go down one more index, the index will go to the end of
      * the list rather than stopping completely.
+     *
+     * @param loopChoices Whether to loop choices or not.
      */
-    public final ChoiceButtonBuilder<T, C> loopChoices() {
-        this.loopChoices = true;
+    public final ChoiceButtonBuilder<T, C> loopChoices(boolean loopChoices) {
+        this.loopChoices = loopChoices;
         return this;
     }
 
@@ -383,7 +385,7 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
 
     /**
      * Specifies the action to perform when the maximum choice is selected. This will only run if the {@link
-     * ChoiceButtonBuilder#loopChoices()} is not enabled. Otherwise the button cannot hit its last choice. By default,
+     * ChoiceButtonBuilder#loopChoices(boolean)} is not enabled. Otherwise the button cannot hit its last choice. By default,
      * the current item is set to a barrier, the anvil sound is played to the player, the lore is updated, the item
      * display name is updated, and the gui is updated to show all the changes. This value can be null in order to do
      * nothing when the final choice is selected.
@@ -397,7 +399,7 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
 
     /**
      * Specifies the action to perform when the minimum choice is selected. This will only run if the {@link
-     * ChoiceButtonBuilder#loopChoices()} is not enabled. Otherwise the button cannot hit its first choice. By default,
+     * ChoiceButtonBuilder#loopChoices(boolean)} is not enabled. Otherwise the button cannot hit its first choice. By default,
      * the current item is set to a barrier, the anvil sound is played to the player, the lore is updated, the item
      * display name is updated, and the gui is updated to show all the changes. This value can be null in order to do
      * nothing when the first choice is selected.
