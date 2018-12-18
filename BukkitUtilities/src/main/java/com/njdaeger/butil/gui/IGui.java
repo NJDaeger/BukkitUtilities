@@ -30,21 +30,28 @@ public interface IGui<T extends IGui<T>> extends Listener {
     <S extends IButton<T, S>> T addItem(S button);
 
     /**
-     * Removes an item at a specified slot
+     * Removes a button at a specified slot
      *
-     * @param slot The slot to remove the item from.
+     * @param slot The slot of the button to remove.
      * @return This GUI
      */
-    T removeItem(int slot);
+    T removeButton(int slot);
 
     /**
-     * Removes a certain amount of items from the gui
+     * Removes a certain amount of buttons from the gui
      *
-     * @param startIndex Where to start removing items from (inclusive)
-     * @param countToRemove How many items to remove
+     * @param startIndex Where to start removing buttons from (inclusive)
+     * @param countToRemove How many buttons to remove
      * @return This GUI
      */
-    T removeItems(int startIndex, int countToRemove);
+    T removeButtons(int startIndex, int countToRemove);
+
+    /**
+     * Check if this GUI has any slots currently open.
+     *
+     * @return True if there's an open slot in the inventory.
+     */
+    boolean hasSlotOpen();
 
     /**
      * Check if the given slot is open or not.
@@ -53,6 +60,18 @@ public interface IGui<T extends IGui<T>> extends Listener {
      * @return True if the slot is empty, false otherwise.
      */
     boolean isSlotOpen(int slot);
+
+    /**
+     * Attempts to find the next open slot in this GUI
+     *
+     * @return The slot number of the next open slot, or -1 if there are no open slots.
+     */
+    default int firstOpenSlot() {
+        if (!hasSlotOpen()) return -1;
+        int i = 0;
+        while (getButton(i) != null) i++;
+        return i;
+    }
 
     /**
      * Attempt to get the slot of a button
@@ -79,6 +98,30 @@ public interface IGui<T extends IGui<T>> extends Listener {
      * @return The button if it exists, null otherwise.
      */
     <S extends IButton<T, S>> IButton<T, S> getButton(Class<S> slotType, int slot);
+
+    /**
+     * Get an array of all the buttons currently in the GUI.
+     *
+     * @return An array of all this GUI's buttons.
+     */
+    IButton<T, ?>[] getButtons();
+
+    /**
+     * Gets an array of buttons starting from index 0 until the limit is reached.
+     *
+     * @param limit How large of an array of buttons to return.
+     * @return An array of buttons which is the same size as the limit provided, unless the limit is greater than or
+     *         equal to the size of the GUI, then the buttons array is returned without trimming.
+     */
+    @SuppressWarnings("unchecked")
+    default IButton<T, ?>[] getButtons(int limit) {
+        if (limit >= getButtons().length) return getButtons();
+        IButton<T, ?>[] buttons = (IButton<T, ?>[]) new Object[limit];
+        for (int i = 0; i < limit; i++) {
+            buttons[i] = getButton(i);
+        }
+        return buttons;
+    }
 
     /**
      * Update the current GUI for the specified player

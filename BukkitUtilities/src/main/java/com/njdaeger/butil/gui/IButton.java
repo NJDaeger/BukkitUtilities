@@ -1,5 +1,6 @@
 package com.njdaeger.butil.gui;
 
+import com.njdaeger.butil.TriConsumer;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -53,7 +54,6 @@ public interface IButton<T extends IGui<T>, S extends IButton<T, S>> {
      */
     void onClick(InventoryClickEvent event);
 
-
     /**
      * Gets the current parent gui
      *
@@ -90,8 +90,8 @@ public interface IButton<T extends IGui<T>, S extends IButton<T, S>> {
     }
 
     /**
-     * Will move this button over to a new slot. All the current values will remain the
-     * same.<p> This will replace any existing item which is currently in the specified slot.
+     * Will move this button over to a new slot. All the current values will remain the same.<p> This will replace any
+     * existing item which is currently in the specified slot.
      *
      * @param slot The new slot to move this button to
      * @return This button
@@ -122,17 +122,17 @@ public interface IButton<T extends IGui<T>, S extends IButton<T, S>> {
      */
     default S moveToSlot(int slot, boolean reset) {
         if (hasParentGui() && getParent().isSlotOpen(slot)) {
-            getParent().removeItem(getSlot());
+            getParent().removeButton(getSlot());
             setSlot(slot, reset);
         }
-        return (S)this;
+        return (S) this;
     }
 
     /**
      * Removes this button.
      */
     default void remove() {
-        if (hasParentGui()) getParent().removeItem(getSlot());
+        if (hasParentGui()) getParent().removeButton(getSlot());
     }
 
 }

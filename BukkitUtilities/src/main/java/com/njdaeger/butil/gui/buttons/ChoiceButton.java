@@ -17,6 +17,7 @@ public class ChoiceButton<T extends IGui<T>, C> implements IButton<T, ChoiceButt
     private TriPredicate<T, ChoiceButton<T, C>, InventoryClickEvent> previousWhen;
     private TriPredicate<T, ChoiceButton<T, C>, InventoryClickEvent> nextWhen;
     private TriConsumer<T, ChoiceButton<T, C>, InventoryClickEvent> onPrevious;
+    private TriConsumer<T, ChoiceButton<T, C>, InventoryClickEvent> onClick;
     private TriConsumer<T, ChoiceButton<T, C>, InventoryClickEvent> onNext;
     private BiFunction<T, ChoiceButton<T, C>, ItemStack> itemStack;
     private final boolean loopChoices;
@@ -56,6 +57,10 @@ public class ChoiceButton<T extends IGui<T>, C> implements IButton<T, ChoiceButt
 
     void onMaxChoice(TriConsumer<T, ChoiceButton<T, C>, InventoryClickEvent> onMaxChoice) {
         this.onMaxChoice = onMaxChoice;
+    }
+
+    void onClick(TriConsumer<T, ChoiceButton<T, C>, InventoryClickEvent> onClick) {
+        this.onClick = onClick;
     }
 
     @Override
@@ -117,8 +122,11 @@ public class ChoiceButton<T extends IGui<T>, C> implements IButton<T, ChoiceButt
             this.currentChoice = choices.get(nextIndex);
             if (onPrevious != null) onPrevious.accept(parent, this, event);
         }
-        if (!loopChoices && currentIndex == choices.size()-1 && onMaxChoice != null) onMaxChoice.accept(parent, this, event);
+        if (!loopChoices && currentIndex == choices.size() - 1 && onMaxChoice != null)
+            onMaxChoice.accept(parent, this, event);
         if (!loopChoices && currentIndex == 0 && onMinChoice != null) onMinChoice.accept(parent, this, event);
+
+        if (onClick != null) onClick.accept(parent, this, event);
     }
 
     @Override
@@ -176,15 +184,15 @@ public class ChoiceButton<T extends IGui<T>, C> implements IButton<T, ChoiceButt
             this.currentIndex = -1;
             this.currentChoice = null;
             this.startingChoice = null;
-        //We know the current choice isnt null, now we check if the choice is in the new given choices list. If it is,
-        //we will set the current index to the index of the new current choice and set this buttons current choice to
-        //the new current choice.
+            //We know the current choice isnt null, now we check if the choice is in the new given choices list. If it is,
+            //we will set the current index to the index of the new current choice and set this buttons current choice to
+            //the new current choice.
         } else if (choices.contains(currentChoice)) {
             this.currentIndex = choices.indexOf(currentChoice);
             this.currentChoice = currentChoice;
             this.startingChoice = currentChoice;
-        //If the choices list is empty or if it doesnt contain the new current choice, we need to add the new current
-        // choice to it since it is selected.
+            //If the choices list is empty or if it doesnt contain the new current choice, we need to add the new current
+            // choice to it since it is selected.
         } else {
             choices.add(currentChoice);
             this.currentIndex = choices.indexOf(currentChoice);

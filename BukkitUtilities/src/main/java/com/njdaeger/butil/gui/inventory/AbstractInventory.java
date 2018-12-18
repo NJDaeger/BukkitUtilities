@@ -16,8 +16,10 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 public abstract class AbstractInventory<T extends IGui<T>> implements IGui<T> {
 
@@ -65,19 +67,24 @@ public abstract class AbstractInventory<T extends IGui<T>> implements IGui<T> {
     }
 
     @Override
-    public T removeItem(int slot) {
+    public T removeButton(int slot) {
         this.slots[slot] = null;
         return (T)this;
     }
 
     @Override
-    public T removeItems(int startIndex, int countToRemove) {
+    public T removeButtons(int startIndex, int countToRemove) {
         for (int i = startIndex; i < startIndex + countToRemove; i++) {
             if (i >= size) break;
             this.slots[i].setParentGui(null);
             this.slots[i] = null;
         }
         return (T)this;
+    }
+
+    @Override
+    public boolean hasSlotOpen() {
+        return Stream.of(slots).anyMatch(Objects::isNull);
     }
 
     @Override
@@ -101,6 +108,11 @@ public abstract class AbstractInventory<T extends IGui<T>> implements IGui<T> {
     @Override
     public <S extends IButton<T, S>> IButton<T, S> getButton(Class<S> slotType, int slot) {
         return isSlotOpen(slot) ? (IButton<T, S>)slots[slot] : null;
+    }
+
+    @Override
+    public IButton<T, ?>[] getButtons() {
+        return slots;
     }
 
     @Override

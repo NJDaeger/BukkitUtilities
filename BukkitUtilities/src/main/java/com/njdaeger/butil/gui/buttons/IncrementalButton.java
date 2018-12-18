@@ -7,6 +7,7 @@ import com.njdaeger.butil.gui.IGui;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.math.BigDecimal;
 import java.util.function.BiFunction;
 
 public class IncrementalButton<T extends IGui<T>> implements IButton<T, IncrementalButton<T>> {
@@ -15,18 +16,19 @@ public class IncrementalButton<T extends IGui<T>> implements IButton<T, Incremen
     private TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> onDecrement;
     private TriPredicate<T, IncrementalButton<T>, InventoryClickEvent> incrementWhen;
     private TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> onIncrement;
+    private TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> onClick;
     private TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> onMax;
     private TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> onMin;
     private BiFunction<T, IncrementalButton<T>, ItemStack> itemStack;
-    private final double shiftStep;
-    private double currentValue;
-    private final double start;
-    private final double step;
-    private final double min;
-    private final double max;
+    private final BigDecimal shiftStep;
+    private BigDecimal currentValue;
+    private final BigDecimal start;
+    private final BigDecimal step;
+    private final BigDecimal min;
+    private final BigDecimal max;
     private T parent;
 
-    IncrementalButton(double min, double max, double start, double step, double shiftStep) {
+    IncrementalButton(BigDecimal min, BigDecimal max, BigDecimal start, BigDecimal step, BigDecimal shiftStep) {
         this.shiftStep = shiftStep;
         this.start = start;
         this.step = step;
@@ -52,11 +54,15 @@ public class IncrementalButton<T extends IGui<T>> implements IButton<T, Incremen
         this.onDecrement = decrement;
     }
 
+    void onClick(TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> onClick) {
+        this.onClick = onClick;
+    }
+
     /**
      * Get the current button index value.
      * @return The current button index value.
      */
-    public Double getIndex() {
+    public BigDecimal getIndex() {
         return currentValue;
     }
 
@@ -64,7 +70,15 @@ public class IncrementalButton<T extends IGui<T>> implements IButton<T, Incremen
      * Set the current button index value.
      * @param value The new current button index value.
      */
-    public void setIndex(Double value) {
+    public void setIndex(double value) {
+        this.currentValue = BigDecimal.valueOf(value);
+    }
+
+    /**
+     * Set the current button index value.
+     * @param value The new current button index value.
+     */
+    public void setIndex(BigDecimal value) {
         this.currentValue = value;
     }
 
@@ -95,21 +109,23 @@ public class IncrementalButton<T extends IGui<T>> implements IButton<T, Incremen
 
     @Override
     public final void onClick(InventoryClickEvent event) {
-        double shiftedValue = event.getClick().isShiftClick() ? shiftStep : step;
+        BigDecimal shiftedValue = event.getClick().isShiftClick() ? shiftStep : step;
 
         if (withinBounds() && (decrementWhen == null || decrementWhen.test(parent, this, event))) {
-            if (currentValue - shiftedValue < min) this.currentValue = min;
-            else this.currentValue -= shiftedValue;
+            if (currentValue.subtract(shiftedValue).compareTo(min) < 0) this.currentValue = min;
+            else this.currentValue = currentValue.subtract(shiftedValue);
             if (onDecrement != null) onDecrement.accept(parent, this, event);
         }
         if (withinBounds() && (incrementWhen == null || incrementWhen.test(parent, this, event))) {
-            if (currentValue + shiftedValue > max) this.currentValue = max;
-            else this.currentValue += shiftedValue;
+            if (currentValue.add(shiftedValue).compareTo(max) > 0) this.currentValue = max;
+            else this.currentValue = currentValue.add(shiftedValue);
             if (onDecrement != null) onIncrement.accept(parent, this, event);
         }
 
-        if (max == currentValue && onMax != null) onMax.accept(parent, this, event);
-        if (min == currentValue && onMin != null) onMin.accept(parent, this, event);
+        if (max.compareTo(currentValue) == 0 && onMax != null) onMax.accept(parent, this, event);
+        if (min.compareTo(currentValue) == 0 && onMin != null) onMin.accept(parent, this, event);
+
+        if (onClick != null) onClick.accept(parent, this, event);
 
     }
 
@@ -119,7 +135,7 @@ public class IncrementalButton<T extends IGui<T>> implements IButton<T, Incremen
     }
 
     private boolean withinBounds() {
-        return currentValue < max || currentValue > min;
+        return currentValue.compareTo(max) < 0 || currentValue.compareTo(min) > 0;
     }
 
 }

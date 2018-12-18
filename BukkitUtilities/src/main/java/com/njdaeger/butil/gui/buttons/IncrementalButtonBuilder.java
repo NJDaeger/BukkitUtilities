@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.math.BigDecimal;
 import java.util.function.BiFunction;
 
 /**
@@ -22,11 +23,11 @@ import java.util.function.BiFunction;
 public final class IncrementalButtonBuilder<T extends IGui<T>> {
 
     //Properties
-    private double shiftStep = 1;
-    private double minimum = 0;
-    private double maximum = 20;
-    private double start = 0;
-    private double step = 5;
+    private BigDecimal shiftStep = BigDecimal.ONE;
+    private BigDecimal minimum = BigDecimal.ZERO;
+    private BigDecimal maximum = BigDecimal.valueOf(20);
+    private BigDecimal start = BigDecimal.ZERO;
+    private BigDecimal step = BigDecimal.valueOf(5);
 
     //Actions
     private BiFunction<T, IncrementalButton<T>, ItemStack> itemStack;
@@ -51,6 +52,7 @@ public final class IncrementalButtonBuilder<T extends IGui<T>> {
         button.setStack(ItemBuilder.of(Material.BARRIER).displayName("Min is " + minimum).build());
         gui.update(player);
     };
+    TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> onClick;
 
     IncrementalButtonBuilder() {
     }
@@ -83,7 +85,7 @@ public final class IncrementalButtonBuilder<T extends IGui<T>> {
      * @param minimum The minimum value allowed for this button
      */
     public IncrementalButtonBuilder<T> min(double minimum) {
-        this.minimum = minimum;
+        this.minimum = BigDecimal.valueOf(minimum);
         return this;
     }
 
@@ -93,7 +95,7 @@ public final class IncrementalButtonBuilder<T extends IGui<T>> {
      * @param maximum The maximum value allowed for this button
      */
     public IncrementalButtonBuilder<T> max(double maximum) {
-        this.maximum = maximum;
+        this.maximum = BigDecimal.valueOf(maximum);
         return this;
     }
 
@@ -104,7 +106,7 @@ public final class IncrementalButtonBuilder<T extends IGui<T>> {
      * @param start The starting value for this button
      */
     public IncrementalButtonBuilder<T> start(double start) {
-        this.start = start;
+        this.start = BigDecimal.valueOf(start);
         return this;
     }
 
@@ -116,19 +118,19 @@ public final class IncrementalButtonBuilder<T extends IGui<T>> {
      * @param step How much to shift the button value whenever increased or decreased.
      */
     public IncrementalButtonBuilder<T> step(double step) {
-        this.step = step;
+        this.step = BigDecimal.valueOf(step);
         return this;
     }
 
     /**
      * Set the shift step value for this incremental button. Whenever the click is a shift click, the button will
-     * increase/decrease this specified amount. See {@link IncrementalButtonBuilder#step(double)} for more information on
-     * this. Default is 1.
+     * increase/decrease this specified amount. See {@link IncrementalButtonBuilder#step(double)} for more information
+     * on this. Default is 1.
      *
      * @param shiftStep How much to shift the button value whenever shift clicked.
      */
     public IncrementalButtonBuilder<T> shiftStep(double shiftStep) {
-        this.shiftStep = shiftStep;
+        this.shiftStep = BigDecimal.valueOf(shiftStep);
         return this;
     }
 
@@ -213,20 +215,34 @@ public final class IncrementalButtonBuilder<T extends IGui<T>> {
     }
 
     /**
+     * This executes any time the button is pressed, but rather than handling any of the button specific code, this is
+     * simply for overlay purposes. For example, if the original intended behavior of the given button is still wanted,
+     * and doesn't want to be rewritten, this can be used to do that.
+     *
+     * @param onClick The additional action to perform when this button is clicked, this can be null to indicate
+     *         no additional action is to be performed.
+     */
+    public final IncrementalButtonBuilder<T> onClick(TriConsumer<T, IncrementalButton<T>, InventoryClickEvent> onClick) {
+        this.onClick = onClick;
+        return this;
+    }
+
+    /**
      * Builds the new incremental button.
      *
      * @return The button
      */
     public IncrementalButton<T> build() {
 
-        Validate.isTrue(minimum < maximum, "Minimum must be less than the maximum.");
-        Validate.isTrue(start >= minimum && start <= maximum, "Start must be within the minimum and maximum bounds.");
+        Validate.isTrue(minimum.compareTo(maximum) < 0, "Minimum must be less than the maximum.");
+        Validate.isTrue(start.compareTo(minimum) >= 0 && start.compareTo(maximum) <= 0, "Start must be within the minimum and maximum bounds.");
 
         IncrementalButton<T> button = new IncrementalButton<>(minimum, maximum, start, step, shiftStep);
         button.setStack(itemStack);
         button.setIndex(start);
         button.onIncrement(incrementWhen, increment);
         button.onDecrement(decrementWhen, decrement);
+        button.onClick(onClick);
         button.onMax(hitMax);
         button.onMin(hitMin);
         return button;

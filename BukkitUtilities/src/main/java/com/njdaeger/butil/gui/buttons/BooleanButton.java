@@ -15,6 +15,7 @@ public class BooleanButton<T extends IGui<T>> implements IButton<T, BooleanButto
     private TriPredicate<T, BooleanButton<T>, InventoryClickEvent> selectWhen;
     private TriConsumer<T, BooleanButton<T>, InventoryClickEvent> onDeselect;
     private TriConsumer<T, BooleanButton<T>, InventoryClickEvent> onSelect;
+    private TriConsumer<T, BooleanButton<T>, InventoryClickEvent> onClick;
     private BiFunction<T, BooleanButton<T>, ItemStack> itemStack;
 
     private final boolean startingSelection;
@@ -39,6 +40,10 @@ public class BooleanButton<T extends IGui<T>> implements IButton<T, BooleanButto
 
     void onDeselect(TriConsumer<T, BooleanButton<T>, InventoryClickEvent> onDeselect) {
         this.onDeselect = onDeselect;
+    }
+
+    void onClick(TriConsumer<T, BooleanButton<T>, InventoryClickEvent> onClick) {
+        this.onClick = onClick;
     }
 
     public boolean isSelected() {
@@ -79,12 +84,15 @@ public class BooleanButton<T extends IGui<T>> implements IButton<T, BooleanButto
 
         if (selectWhen.test(parent, this, event)) {
             this.isSelected = true;
-            onSelect.accept(parent, this, event);
+            if (onSelect != null) onSelect.accept(parent, this, event);
         }
-        if (deselectWhen.test(parent, this, event)) {
+        else if (deselectWhen.test(parent, this, event)) {
             this.isSelected = false;
-            onDeselect.accept(parent, this, event);
+            if (onDeselect != null) onDeselect.accept(parent, this, event);
         }
+
+        if (onClick != null) onClick.accept(parent, this, event);
+
     }
 
     @Override

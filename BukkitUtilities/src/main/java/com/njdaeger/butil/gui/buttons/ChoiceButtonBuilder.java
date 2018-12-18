@@ -107,6 +107,8 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
         gui.update(player);
     };
 
+    private TriConsumer<T, ChoiceButton<T, C>, InventoryClickEvent> onClick;
+
     ChoiceButtonBuilder() {
     }
 
@@ -408,6 +410,19 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
     }
 
     /**
+     * This executes any time the button is pressed, but rather than handling any of the button specific code, this is
+     * simply for overlay purposes. For example, if the original intended behavior of the given button is still wanted,
+     * and doesn't want to be rewritten, this can be used to do that.
+     *
+     * @param onClick The additional action to perform when this button is clicked, this can be null to indicate
+     *         no additional action is to be performed.
+     */
+    public final ChoiceButtonBuilder<T, C> onClick(TriConsumer<T, ChoiceButton<T, C>, InventoryClickEvent> onClick) {
+        this.onClick = onClick;
+        return this;
+    }
+
+    /**
      * Builds the new choice button.
      *
      * @return The button.
@@ -429,6 +444,7 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
         button.nextWhen(nextWhen);
         button.onMaxChoice(onMaxChoice);
         button.onMinChoice(onMinChoice);
+        button.onClick(onClick);
         return button;
     }
 
