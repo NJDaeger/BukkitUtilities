@@ -54,18 +54,18 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
         else if (index >= size - 1) skip = size - 3;
         else skip = 0;
         return button.getChoices()
-                .stream()
-                .skip(skip)
-                .limit(3)
-                .map(obj -> new Pair<>(obj, nameMapper.apply(obj)))
-                .map(pair -> button.isSelected(pair.getFirst()) ? ChatColor.BOLD + pair.getSecond() : pair.getSecond())
-                .collect(Collectors.toList());
+            .stream()
+            .skip(skip)
+            .limit(3)
+            .map(obj -> new Pair<>(obj, nameMapper.apply(obj)))
+            .map(pair -> button.isSelected(pair.getFirst()) ? ChatColor.BOLD + pair.getSecond() : pair.getSecond())
+            .collect(Collectors.toList());
     };
 
     //The default itemstack settings
     private BiFunction<T, ChoiceButton<T, C>, ItemStack> itemStack = (gui, button) -> ItemBuilder.of(material)
-            .displayName(buttonName.apply(gui, button))
-            .lore(loreFunction.apply(gui, button)).build();
+        .displayName(buttonName.apply(gui, button))
+        .lore(loreFunction != null ? loreFunction.apply(gui, button) : null).build();
 
     //When to go to the previous option
     private TriPredicate<T, ChoiceButton<T, C>, InventoryClickEvent> previousWhen = (gui, button, event) -> event.getClick().isRightClick();
@@ -89,9 +89,9 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
         Player player = (Player) event.getWhoClicked();
         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1, 1);
         button.setStack(ItemBuilder.of(Material.BARRIER)
-                .displayName(buttonName.apply(gui, button))
-                .lore(loreFunction.apply(gui, button))
-                .build());
+            .displayName(buttonName.apply(gui, button))
+            .lore(loreFunction != null ? loreFunction.apply(gui, button) : null)
+            .build());
         gui.update(player);
     };
 
@@ -100,9 +100,9 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
         Player player = (Player) event.getWhoClicked();
         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1, 1);
         ItemStack stack = ItemBuilder.of(Material.BARRIER)
-                .displayName(buttonName.apply(gui, button))
-                .lore(loreFunction.apply(gui, button))
-                .build();
+            .displayName(buttonName.apply(gui, button))
+            .lore(loreFunction != null ? loreFunction.apply(gui, button) : null)
+            .build();
         button.setStack(stack);
         gui.update(player);
     };
@@ -185,73 +185,6 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
     }
 
     /**
-     * Specifies the material to be used in the inventory for this button. By default, the lore of this button is pre
-     * set. The lore of this button will be showing three options closest to the one selected. The currently selected
-     * option will usually remain in the middle of the surrounding selections unless the selection is the first or last
-     * selection in the list. Then the selection will be the top or the bottom of the three possible selections
-     * respectively.
-     *
-     * @param material The material to use for this button in the inventory
-     * @param buttonName The display name of the button in the inventory
-     * @param nameMapper The names of the objects being represented and how they should be applied
-     * @apiNote None of these values can be null.
-     */
-    public final ChoiceButtonBuilder<T, C> itemStack(Material material, String buttonName, Function<C, String> nameMapper) {
-        return itemStack(material, (gui, button) -> buttonName, nameMapper);
-    }
-
-    /**
-     * Specifies the material to be used in the inventory for this button. By default, the lore of this button is pre
-     * set. The lore of this button will be showing three options closest to the one selected. The currently selected
-     * option will usually remain in the middle of the surrounding selections unless the selection is the first or last
-     * selection in the list. Then the selection will be the top or the bottom of the three possible selections
-     * respectively.
-     *
-     * @param material The material to use for this button in the inventory
-     * @param buttonName The display name of the button in the inventory
-     * @param nameMapper The names of the objects being represented and how they should be applied
-     * @apiNote None of these values can be null.
-     */
-    public final ChoiceButtonBuilder<T, C> itemStack(Material material, BiFunction<T, ChoiceButton<T, C>, String> buttonName, Function<C, String> nameMapper) {
-        Validate.notNull(nameMapper, "Name mapper cannot be null.");
-        this.nameMapper = nameMapper;
-        return itemStack(material, buttonName);
-    }
-
-    /**
-     * Specifies the material to be used in the inventory for this button. In addition, it also specifies the display
-     * name of the button, how to map the objects this button iterates over into string names, and how to supply the
-     * lore, if any is wanted.
-     *
-     * @param material The material to use for this button in the inventory
-     * @param buttonName The display name of the button in the inventory
-     * @param nameMapper The names of the objects being represented and how they should be applied
-     * @param loreFunction The function to use to create the lore for this button. This value can be null,
-     *         meaning which the button will not have any lore.
-     * @apiNote None of these values can be null except for the loreFunction.
-     */
-    public final ChoiceButtonBuilder<T, C> itemStack(Material material, String buttonName, Function<C, String> nameMapper, BiFunction<T, ChoiceButton<T, C>, List<String>> loreFunction) {
-        return itemStack(material, (gui, button) -> buttonName, nameMapper, loreFunction);
-    }
-
-    /**
-     * Specifies the material to be used in the inventory for this button. In addition, it also specifies the display
-     * name of the button, how to map the objects this button iterates over into string names, and how to supply the
-     * lore, if any is wanted.
-     *
-     * @param material The material to use for this button in the inventory
-     * @param buttonName The display name of the button in the inventory
-     * @param nameMapper The names of the objects being represented and how they should be applied
-     * @param loreFunction The function to use to create the lore for this button. This value can be null,
-     *         meaning which the button will not have any lore.
-     * @apiNote None of these values can be null except for the loreFunction.
-     */
-    public final ChoiceButtonBuilder<T, C> itemStack(Material material, BiFunction<T, ChoiceButton<T, C>, String> buttonName, Function<C, String> nameMapper, BiFunction<T, ChoiceButton<T, C>, List<String>> loreFunction) {
-        this.loreFunction = loreFunction;
-        return itemStack(material, buttonName, nameMapper);
-    }
-
-    /**
      * Whether to loop the choices of this button. by default, looping is disabled, so when we cant go any higher or
      * lower in the list of choices, the correct {@link ChoiceButtonBuilder#onMaxChoice(TriConsumer)} and {@link
      * ChoiceButtonBuilder#onMinChoice(TriConsumer)} method will be ran. If this s true, those methods will not be run
@@ -301,9 +234,9 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
     }
 
     /**
-     * What choice to start this button out on. If either both this method and {@link ChoiceButtonBuilder#start(int)}
-     * are not called, there will be no starting choice. (only one of the two methods needs to be called if a starting
-     * value is desired)
+     * What choice to start this button out on. If either both this method and {@link ChoiceButtonBuilder#start(C)} are
+     * not called, there will be no starting choice. (only one of the two methods needs to be called if a starting value
+     * is desired)
      *
      * @param choice The index of the choice to start out with. If the index is out of bounds, there will be no
      *         starting choice.
@@ -385,10 +318,10 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
 
     /**
      * Specifies the action to perform when the maximum choice is selected. This will only run if the {@link
-     * ChoiceButtonBuilder#loopChoices(boolean)} is not enabled. Otherwise the button cannot hit its last choice. By default,
-     * the current item is set to a barrier, the anvil sound is played to the player, the lore is updated, the item
-     * display name is updated, and the gui is updated to show all the changes. This value can be null in order to do
-     * nothing when the final choice is selected.
+     * ChoiceButtonBuilder#loopChoices(boolean)} is not enabled. Otherwise the button cannot hit its last choice. By
+     * default, the current item is set to a barrier, the anvil sound is played to the player, the lore is updated, the
+     * item display name is updated, and the gui is updated to show all the changes. This value can be null in order to
+     * do nothing when the final choice is selected.
      *
      * @param onMax What to do when the last choice is selected.
      */
@@ -399,10 +332,10 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
 
     /**
      * Specifies the action to perform when the minimum choice is selected. This will only run if the {@link
-     * ChoiceButtonBuilder#loopChoices(boolean)} is not enabled. Otherwise the button cannot hit its first choice. By default,
-     * the current item is set to a barrier, the anvil sound is played to the player, the lore is updated, the item
-     * display name is updated, and the gui is updated to show all the changes. This value can be null in order to do
-     * nothing when the first choice is selected.
+     * ChoiceButtonBuilder#loopChoices(boolean)} is not enabled. Otherwise the button cannot hit its first choice. By
+     * default, the current item is set to a barrier, the anvil sound is played to the player, the lore is updated, the
+     * item display name is updated, and the gui is updated to show all the changes. This value can be null in order to
+     * do nothing when the first choice is selected.
      *
      * @param onMin What to do when the beginning choice is selected.
      */
@@ -421,6 +354,35 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
      */
     public final ChoiceButtonBuilder<T, C> onClick(TriConsumer<T, ChoiceButton<T, C>, InventoryClickEvent> onClick) {
         this.onClick = onClick;
+        return this;
+    }
+
+    /**
+     * This specifies how to name the choices in the list of choices. By default, the name mapper is meant to turn the
+     * choice object into a string by calling the {@link Object#toString()} method. This functionality can be
+     * overridden, however.
+     *
+     * @param nameMapper The new name mapper for the choices in this button. This cannot be null.
+     */
+    public final ChoiceButtonBuilder<T, C> nameMapper(Function<C, String> nameMapper) {
+        Validate.notNull(nameMapper, "Name mapper cannot be null.");
+        this.nameMapper = nameMapper;
+        return this;
+    }
+
+    /**
+     * The lore function for this button. By default, the lore of this button is meant to highlight the current
+     * selection and surround it with the previous choice and the next choice. For example:
+     * <p>
+     * <p> previous choice
+     * <p><b>current choice</b>
+     * <p> next choice
+     * <p><p>
+     *     Would be the layout of the default lore.
+     * @param loreFunction The new lore function to use for this button, or null if no lore function is to be used.
+     */
+    public final ChoiceButtonBuilder<T, C> loreFunction(BiFunction<T, ChoiceButton<T, C>, List<String>> loreFunction) {
+        this.loreFunction = loreFunction;
         return this;
     }
 

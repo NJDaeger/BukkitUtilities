@@ -1,13 +1,18 @@
 package com.njdaeger.butil;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -20,13 +25,30 @@ public final class ItemBuilder {
         this.stack = stack;
     }
 
-
     public static ItemBuilder of(Material material) {
-        return new ItemBuilder(new ItemStack(material));
+        return of(new ItemStack(material));
     }
 
     public static ItemBuilder of(ItemStack stack) {
         return new ItemBuilder(stack);
+    }
+
+    public static ItemBuilder of(String base64) {
+        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+
+        SkullMeta headMeta = (SkullMeta) head.getItemMeta();
+        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+        profile.getProperties().put("textures", new Property("textures", base64));
+        Field profileField;
+        try {
+            profileField = headMeta.getClass().getDeclaredField("profile");
+            profileField.setAccessible(true);
+            profileField.set(headMeta, profile);
+        } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e1) {
+            e1.printStackTrace();
+        }
+        head.setItemMeta(headMeta);
+        return of(head);
     }
 
     public ItemBuilder amount(int amount) {
