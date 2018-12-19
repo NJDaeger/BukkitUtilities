@@ -1,5 +1,6 @@
 package com.njdaeger.butil.gui.buttons;
 
+import com.njdaeger.butil.ItemBuilder;
 import com.njdaeger.butil.TriConsumer;
 import com.njdaeger.butil.TriPredicate;
 import com.njdaeger.butil.gui.IButton;
@@ -19,6 +20,8 @@ public class ChoiceButton<T extends IGui<T>, C> implements IButton<T, ChoiceButt
     private TriConsumer<T, ChoiceButton<T, C>, InventoryClickEvent> onPrevious;
     private TriConsumer<T, ChoiceButton<T, C>, InventoryClickEvent> onClick;
     private TriConsumer<T, ChoiceButton<T, C>, InventoryClickEvent> onNext;
+    private BiFunction<T, ChoiceButton<T, C>, List<String>> loreFunction;
+    private BiFunction<T, ChoiceButton<T, C>, String> selectedFormat;
     private BiFunction<T, ChoiceButton<T, C>, ItemStack> itemStack;
     private final boolean loopChoices;
     private final int shiftIndex;
@@ -65,7 +68,8 @@ public class ChoiceButton<T extends IGui<T>, C> implements IButton<T, ChoiceButt
 
     @Override
     public ItemStack getStack() {
-        return itemStack.apply(parent, this);
+        if (loreFunction != null) return ItemBuilder.of(itemStack.apply(parent, this)).lore(loreFunction.apply(parent, this)).build();
+        else return itemStack.apply(parent, this);
     }
 
     @Override
@@ -132,6 +136,22 @@ public class ChoiceButton<T extends IGui<T>, C> implements IButton<T, ChoiceButt
     @Override
     public T getParent() {
         return parent;
+    }
+
+    public BiFunction<T, ChoiceButton<T, C>, List<String>> getLoreFunction() {
+        return loreFunction;
+    }
+
+    public void setLoreFunction(BiFunction<T, ChoiceButton<T, C>, List<String>> loreFunction) {
+        this.loreFunction = loreFunction;
+    }
+
+    public BiFunction<T, ChoiceButton<T, C>, String> getSelectedFormat() {
+        return selectedFormat;
+    }
+
+    public void setSelectedFormat(BiFunction<T, ChoiceButton<T, C>, String> selectedFormat) {
+        this.selectedFormat = selectedFormat;
     }
 
     public int getChoiceIndex() {

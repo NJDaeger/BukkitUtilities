@@ -13,6 +13,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -40,32 +42,44 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
     Actions and defaults
 
      */
-    private Material material;
-    private BiFunction<T, ChoiceButton<T, C>, String> buttonName = (gui, button) -> "Choice: " + (button.getChoiceIndex() + 1) + "/" + button.getChoices().size();
+    //private Material material;
+    //private BiFunction<T, ChoiceButton<T, C>, String> buttonName = (gui, button) -> "Choice: " + (button.getChoiceIndex() + 1) + "/" + button.getChoices().size();
     //The name mapper for mapping the name to the lore.
     private Function<C, String> nameMapper = C::toString;
 
+    private BiFunction<T, ChoiceButton<T, C>, String> selectedFormat = (gui, button) -> ChatColor.BOLD + nameMapper.apply(button.getChoice());
+
     //The function which creates the lore
     private BiFunction<T, ChoiceButton<T, C>, List<String>> loreFunction = (gui, button) -> {
-        int skip;
-        int size = button.getChoices().size();
-        int index = button.getChoiceIndex();
-        if (index > 0 && index < size - 1) skip = index - 1;
-        else if (index >= size - 1) skip = size - 3;
-        else skip = 0;
-        return button.getChoices()
-            .stream()
-            .skip(skip)
-            .limit(3)
-            .map(obj -> new Pair<>(obj, nameMapper.apply(obj)))
-            .map(pair -> button.isSelected(pair.getFirst()) ? ChatColor.BOLD + pair.getSecond() : pair.getSecond())
-            .collect(Collectors.toList());
+        if (button.getChoices().size() == 0) return null;
+        else if (button.getChoices().size() == 1) return Collections.singletonList(selectedFormat.apply(gui, button));
+        else if (button.getChoices().size() < 4) {
+            List<String> lore = new ArrayList<>();
+            for (C c : button.getChoices()) {
+                if (button.isSelected(c)) lore.add(selectedFormat.apply(gui, button));
+                else lore.add(nameMapper.apply(c));
+            }
+            return lore;
+        }
+        else {
+            int skip;
+            int size = button.getChoices().size();
+            int index = button.getChoiceIndex();
+            if (index > 0 && index < size - 1) skip = index - 1;
+            else if (index >= size - 1) skip = size - 3;
+            else skip = 0;
+            return button.getChoices()
+                .stream()
+                .skip(skip)
+                .limit(3)
+                .map(obj -> new Pair<>(obj, nameMapper.apply(obj)))
+                .map(pair -> button.isSelected(pair.getFirst()) ? selectedFormat.apply(gui, button) : pair.getSecond())
+                .collect(Collectors.toList());
+        }
     };
 
     //The default itemstack settings
-    private BiFunction<T, ChoiceButton<T, C>, ItemStack> itemStack = (gui, button) -> ItemBuilder.of(material)
-        .displayName(buttonName.apply(gui, button))
-        .lore(loreFunction != null ? loreFunction.apply(gui, button) : null).build();
+    private BiFunction<T, ChoiceButton<T, C>, ItemStack> itemStack;
 
     //When to go to the previous option
     private TriPredicate<T, ChoiceButton<T, C>, InventoryClickEvent> previousWhen = (gui, button, event) -> event.getClick().isRightClick();
@@ -89,8 +103,8 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
         Player player = (Player) event.getWhoClicked();
         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1, 1);
         button.setStack(ItemBuilder.of(Material.BARRIER)
-            .displayName(buttonName.apply(gui, button))
-            .lore(loreFunction != null ? loreFunction.apply(gui, button) : null)
+            .displayName("Min choice is " + nameMapper.apply(button.getChoice()))
+            .lore(button.getLoreFunction() != null ? button.getLoreFunction().apply(gui, button) : null)
             .build());
         gui.update(player);
     };
@@ -100,8 +114,8 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
         Player player = (Player) event.getWhoClicked();
         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1, 1);
         ItemStack stack = ItemBuilder.of(Material.BARRIER)
-            .displayName(buttonName.apply(gui, button))
-            .lore(loreFunction != null ? loreFunction.apply(gui, button) : null)
+            .displayName("Max choice is " + nameMapper.apply(button.getChoice()))
+            .lore(button.getLoreFunction() != null ? button.getLoreFunction().apply(gui, button) : null)
             .build();
         button.setStack(stack);
         gui.update(player);
@@ -148,40 +162,7 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
      */
     public final ChoiceButtonBuilder<T, C> itemStack(Material material) {
         Validate.notNull(material, "Material cannot be null");
-        this.material = material;
-        return this;
-    }
-
-    /**
-     * Specifies the material to be used in the inventory for this button. By default, the lore and the name of this
-     * button are pre set. The lore of this button will be showing the three options closest to the one selected. The
-     * selection option will usually always remain in the middle unless it is the first selection or the last selection
-     * in a non looping button. The name of this selection will be retrieved by calling the {@link C#toString()} method
-     * which is what will be shown in the lore.
-     *
-     * @param material The material to use for this button in the inventory
-     * @param buttonName The display name of the button in the inventory
-     * @apiNote None of these values can be null.
-     */
-    public final ChoiceButtonBuilder<T, C> itemStack(Material material, String buttonName) {
-        return itemStack(material, (gui, button) -> buttonName);
-    }
-
-    /**
-     * Specifies the material to be used in the inventory for this button. By default, the lore and the name of this
-     * button are pre set. The lore of this button will be showing the three options closest to the one selected. The
-     * selection option will usually always remain in the middle unless it is the first selection or the last selection
-     * in a non looping button. The name of this selection will be retrieved by calling the {@link C#toString()} method
-     * which is what will be shown in the lore.
-     *
-     * @param material The material to use for this button in the inventory
-     * @param buttonName The display name of the button in the inventory
-     * @apiNote None of these values can be null.
-     */
-    public final ChoiceButtonBuilder<T, C> itemStack(Material material, BiFunction<T, ChoiceButton<T, C>, String> buttonName) {
-        Validate.notNull(buttonName, "Name cannot be null");
-        this.buttonName = buttonName;
-        return itemStack(material);
+        return itemStack(new ItemStack(material));
     }
 
     /**
@@ -387,6 +368,16 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
     }
 
     /**
+     * What the selected string is supposed to look like in the lore function.
+     * @param selectedFormat The selection format
+     */
+    public final ChoiceButtonBuilder<T, C> selectedFormat(BiFunction<T, ChoiceButton<T, C>, String> selectedFormat) {
+        Validate.notNull(selectedFormat, "Selected format cannot be null.");
+        this.selectedFormat = selectedFormat;
+        return this;
+    }
+
+    /**
      * Builds the new choice button.
      *
      * @return The button.
@@ -408,6 +399,8 @@ public final class ChoiceButtonBuilder<T extends IGui<T>, C> {
         button.nextWhen(nextWhen);
         button.onMaxChoice(onMaxChoice);
         button.onMinChoice(onMinChoice);
+        button.setLoreFunction(loreFunction);
+        button.setSelectedFormat(selectedFormat);
         button.onClick(onClick);
         return button;
     }
