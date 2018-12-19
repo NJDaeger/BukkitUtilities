@@ -68,7 +68,8 @@ public class ChoiceButton<T extends IGui<T>, C> implements IButton<T, ChoiceButt
 
     @Override
     public ItemStack getStack() {
-        if (loreFunction != null) return ItemBuilder.of(itemStack.apply(parent, this)).lore(loreFunction.apply(parent, this)).build();
+        if (loreFunction != null)
+            return ItemBuilder.of(itemStack.apply(parent, this)).lore(loreFunction.apply(parent, this)).build();
         else return itemStack.apply(parent, this);
     }
 
@@ -98,6 +99,8 @@ public class ChoiceButton<T extends IGui<T>, C> implements IButton<T, ChoiceButt
         int possibleIndex;
         int nextIndex;
 
+        boolean hasClicked = false;
+
         if (nextWhen.test(parent, this, event)) {
             //Get the possible index by adding the shift to the current index.
             possibleIndex = currentIndex + shift;
@@ -111,6 +114,10 @@ public class ChoiceButton<T extends IGui<T>, C> implements IButton<T, ChoiceButt
             //Setting the values in and accepting the consumer
             this.currentIndex = nextIndex;
             this.currentChoice = choices.get(nextIndex);
+            if (onClick != null) {
+                onClick.accept(parent, this, event);
+                hasClicked = true;
+            }
             if (onNext != null) onNext.accept(parent, this, event);
         }
         if (previousWhen.test(parent, this, event)) {
@@ -124,13 +131,19 @@ public class ChoiceButton<T extends IGui<T>, C> implements IButton<T, ChoiceButt
 
             this.currentIndex = nextIndex;
             this.currentChoice = choices.get(nextIndex);
+
+            if (onClick != null && !hasClicked) {
+                onClick.accept(parent, this, event);
+                hasClicked = true;
+            }
+
             if (onPrevious != null) onPrevious.accept(parent, this, event);
         }
+        if (onClick != null && !hasClicked) onClick.accept(parent, this, event);
         if (!loopChoices && currentIndex == choices.size() - 1 && onMaxChoice != null)
             onMaxChoice.accept(parent, this, event);
         if (!loopChoices && currentIndex == 0 && onMinChoice != null) onMinChoice.accept(parent, this, event);
 
-        if (onClick != null) onClick.accept(parent, this, event);
     }
 
     @Override

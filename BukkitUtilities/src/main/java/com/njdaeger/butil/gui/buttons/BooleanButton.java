@@ -84,14 +84,13 @@ public class BooleanButton<T extends IGui<T>> implements IButton<T, BooleanButto
 
         if (selectWhen.test(parent, this, event)) {
             this.isSelected = true;
+            if (onClick != null) onClick.accept(parent, this, event);
             if (onSelect != null) onSelect.accept(parent, this, event);
-        }
-        else if (deselectWhen.test(parent, this, event)) {
+        } else if (deselectWhen.test(parent, this, event)) {
             this.isSelected = false;
+            if (onClick != null) onClick.accept(parent, this, event);
             if (onDeselect != null) onDeselect.accept(parent, this, event);
         }
-
-        if (onClick != null) onClick.accept(parent, this, event);
 
     }
 

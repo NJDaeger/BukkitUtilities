@@ -111,21 +111,31 @@ public class IncrementalButton<T extends IGui<T>> implements IButton<T, Incremen
     public final void onClick(InventoryClickEvent event) {
         BigDecimal shiftedValue = event.getClick().isShiftClick() ? shiftStep : step;
 
+        //Whether the custom onClick method has been ran
+        boolean hasClicked = false;
+
         if (withinBounds() && (decrementWhen == null || decrementWhen.test(parent, this, event))) {
             if (currentValue.subtract(shiftedValue).compareTo(min) < 0) this.currentValue = min;
             else this.currentValue = currentValue.subtract(shiftedValue);
+            if (onClick != null) {
+                onClick.accept(parent, this, event);
+                hasClicked = true;
+            }
             if (onDecrement != null) onDecrement.accept(parent, this, event);
         }
         if (withinBounds() && (incrementWhen == null || incrementWhen.test(parent, this, event))) {
             if (currentValue.add(shiftedValue).compareTo(max) > 0) this.currentValue = max;
             else this.currentValue = currentValue.add(shiftedValue);
-            if (onDecrement != null) onIncrement.accept(parent, this, event);
+            if (onClick != null && !hasClicked) {
+                onClick.accept(parent, this, event);
+                hasClicked = true;
+            }
+            if (onIncrement != null) onIncrement.accept(parent, this, event);
         }
 
+        if (onClick != null && !hasClicked) onClick.accept(parent, this, event);
         if (max.compareTo(currentValue) == 0 && onMax != null) onMax.accept(parent, this, event);
         if (min.compareTo(currentValue) == 0 && onMin != null) onMin.accept(parent, this, event);
-
-        if (onClick != null) onClick.accept(parent, this, event);
 
     }
 
