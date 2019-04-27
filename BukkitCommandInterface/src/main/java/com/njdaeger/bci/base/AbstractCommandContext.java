@@ -755,7 +755,7 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
      * @return true if the arg at the specified index matches the given string
      */
     public boolean subCommandAt(int index, String match, boolean ignoreCase, CommandExecutor<C> executor) throws BCIException {
-        if ((ignoreCase ? argAt(index).equalsIgnoreCase(match) : argAt(index).equals(match))) {
+        if (isLength(index) && (ignoreCase ? argAt(index).equalsIgnoreCase(match) : argAt(index).equals(match))) {
             executor.execute((C)this);
             return true;
         }
