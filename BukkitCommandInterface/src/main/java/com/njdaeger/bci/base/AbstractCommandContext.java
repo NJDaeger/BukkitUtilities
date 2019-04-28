@@ -738,7 +738,7 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
      * @return true if the index passed. False otherwise.
      */
     public boolean subCommandAt(int index, CommandExecutor<C> executor) throws BCIException {
-        if (isLength(index)) {
+        if (isLength(index + 1)) {
             executor.execute((C)this);
             return true;
         }
@@ -755,7 +755,7 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
      * @return true if the arg at the specified index matches the given string
      */
     public boolean subCommandAt(int index, String match, boolean ignoreCase, CommandExecutor<C> executor) throws BCIException {
-        if (isLength(index) && (ignoreCase ? argAt(index).equalsIgnoreCase(match) : argAt(index).equals(match))) {
+        if (isLength(index + 1) && (ignoreCase ? argAt(index).equalsIgnoreCase(match) : argAt(index).equals(match))) {
             executor.execute((C)this);
             return true;
         }
@@ -771,7 +771,7 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
      * @return true if the index and the senderType passed. False otherwise
      */
     public boolean subCommandAt(int index, SenderType senderType, CommandExecutor<C> executor) throws BCIException {
-        if (isLength(index) && getSenderType() == senderType) {
+        if (isLength(index + 1) && getSenderType() == senderType) {
             executor.execute((C)this);
             return true;
         }
