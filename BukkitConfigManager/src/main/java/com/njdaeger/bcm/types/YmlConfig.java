@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class YmlConfig extends BaseConfig {
     
-    private final YamlConfiguration config;
+    private YamlConfiguration config;
     private final File file;
     
     public YmlConfig(Plugin plugin, String configName) {
@@ -51,7 +51,12 @@ public class YmlConfig extends BaseConfig {
     public File getFile() {
         return file;
     }
-    
+
+    @Override
+    public void reload() {
+        this.config = YamlConfiguration.loadConfiguration(file);
+    }
+
     @Override
     public void addEntry(String path, Object value) {
         if (getValue(path) == null) {

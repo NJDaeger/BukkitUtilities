@@ -32,7 +32,7 @@ public interface IConfig extends ISection {
     
     @Override
     boolean isSection(String path);
-    
+
     @Override
     ConfigType getType();//BaseConfig
     
@@ -42,7 +42,12 @@ public interface IConfig extends ISection {
      * @return The file of this config.
      */
     File getFile();
-    
+
+    /**
+     * Reloads the cached file of this configuration.
+     */
+    void reload();
+
     @Override
     default String getCurrentPath() {
         return "";

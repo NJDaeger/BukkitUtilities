@@ -1,7 +1,5 @@
 package com.njdaeger.btu;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -58,9 +56,7 @@ public abstract class Text {
      * Represents a section of text
      */
     public static class TextSection extends Text {
-    
-        public static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-        
+
         private String text = "";
         private String insertion;
         private boolean isParent;
@@ -303,7 +299,7 @@ public abstract class Text {
                 List<JsonObject> val = new ArrayList<>();
                 val.add(hoverEvent.getHover().getJson());
                 hover.addProperty("action", hoverEvent.getAction().toString().toLowerCase());
-                hover.add("value", GSON.toJsonTree(val));
+                hover.add("value", Util.GSON.toJsonTree(val));
             }
             
             JsonObject click = null;
@@ -333,13 +329,13 @@ public abstract class Text {
                 for (TextSection section : extra) {
                     sections.add(section.getJson());
                 }
-                json.add("extra", GSON.toJsonTree(sections));
+                json.add("extra", Util.GSON.toJsonTree(sections));
             }
             return json;
         }
         
         /**
-         * Gets a simplified String that isn't a json object
+         * Gets a simplified String that isn't a json object. (No click or hover events are included, just text with formatting)
          * @return - Formatted String
          */
         public String getFormatted() {
@@ -367,13 +363,21 @@ public abstract class Text {
             if (isParent) return getJson().toString();
             return parent.getJson().toString();
         }
-        
+
+        /**
+         * Returns a very simple text. Removes all color, removes all formatting.
+         * @return The plain text
+         */
         public String toUnformatted() {
             StringBuilder builder = new StringBuilder();
             getParent().getSections().stream().map(TextSection::getText).forEach(builder::append);
             return builder.toString();
         }
-        
+
+        /**
+         * Gets a list of sections this textsection consists of
+         * @return A list of textsections
+         */
         public List<TextSection> getSections() {
             List<TextSection> sections = new ArrayList<>(getParent().getExtra());
             sections.add(0, getParent());

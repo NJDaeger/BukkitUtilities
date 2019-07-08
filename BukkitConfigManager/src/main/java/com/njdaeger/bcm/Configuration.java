@@ -66,4 +66,9 @@ public class Configuration implements IConfig {
     public File getFile() {
         return config.getFile();
     }
+
+    @Override
+    public void reload() {
+        config.reload();
+    }
 }
