@@ -297,12 +297,15 @@ public class BCICommand<C extends AbstractCommandContext<C, T>, T extends Abstra
     public List<String> complete(T context) {
         
         try {
+
             List<String> possible = new ArrayList<>();
     
             if (context.getCurrent() == null) {
                 return context.currentPossibleCompletions();
             }
-            
+
+            if (hasFlags() && context.hasArgs()) Parser.parseFlags(context);
+
             if (tabExecutor != null) {
                 tabExecutor.complete(context);
                 

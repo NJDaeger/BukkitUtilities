@@ -20,7 +20,7 @@ public class BCICommandWrapper extends AbstractCommandWrapper<CommandContext, Ta
     
     @Override
     public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
-        return command.complete(new TabContext(new CommandContext(plugin, command, sender, args, alias)));
+        return command.complete(new TabContext(plugin, command, sender, args, alias));
     }
     
     @Override
