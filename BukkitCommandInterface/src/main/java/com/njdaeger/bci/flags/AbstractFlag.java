@@ -114,6 +114,6 @@ public abstract class AbstractFlag<A extends ParsedType<?>> {
      * Gets the parsed type this flag returns.
      * @return The parsed type this flag returns
      */
-    protected abstract A getFlagType();
+    public abstract A getFlagType();
 
 }

@@ -18,7 +18,7 @@ public final class StringFlag extends AbstractFlag<StringType> {
     }
     
     @Override
-    protected StringType getFlagType() {
+    public StringType getFlagType() {
         return new StringType();
     }
 }

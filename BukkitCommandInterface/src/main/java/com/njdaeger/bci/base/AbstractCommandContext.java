@@ -3,12 +3,8 @@ package com.njdaeger.bci.base;
 import com.njdaeger.bci.SenderType;
 import com.njdaeger.bci.Utils;
 import com.njdaeger.bci.base.executors.CommandExecutor;
-import com.njdaeger.bci.exceptions.ArgumentParseException;
-import com.njdaeger.bci.exceptions.InvalidSenderException;
-import com.njdaeger.bci.exceptions.NotEnoughArgsException;
-import com.njdaeger.bci.exceptions.PermissionDeniedException;
-import com.njdaeger.bci.exceptions.TooManyArgsException;
-import com.njdaeger.bci.flags.LiveFlag;
+import com.njdaeger.bci.exceptions.*;
+import com.njdaeger.bci.flags.AbstractFlag;
 import com.njdaeger.bci.types.ParsedType;
 import com.njdaeger.bci.types.defaults.BooleanType;
 import com.njdaeger.bci.types.defaults.DoubleType;
@@ -32,8 +28,9 @@ import java.util.stream.Stream;
 
 @SuppressWarnings({"unused", "WeakerAccess", "unchecked"})
 public abstract class AbstractCommandContext<C extends AbstractCommandContext<C, T>, T extends AbstractTabContext<C, T>> {
-    
-    private final Map<String, LiveFlag> flags;
+
+    private final Map<Class<? extends AbstractFlag<?>>, String> classToString;
+    private final Map<String, Object> flags;
     protected final BCICommand<C, T> command;
     protected final CommandSender sender;
     protected final Plugin plugin;
@@ -49,12 +46,14 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
      * @param alias The alias used in the execution of this command.
      */
     public AbstractCommandContext(Plugin plugin, BCICommand<C, T> command, CommandSender sender, String[] args, String alias) {
+        this.classToString = new HashMap();
         this.flags = new HashMap<>();
         this.command = command;
         this.plugin = plugin;
         this.sender = sender;
         this.alias = alias;
         this.args = args;
+        System.out.println(args.length + "CC");
     }
     
     /**
@@ -62,16 +61,15 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
      * @return The plugin message prefix.
      */
     protected abstract String getPluginMessagePrefix();
-    
-    /**
-     * Gets a desired flag from the current execution
-     * @param flag The flag to attempt to get
-     * @return The LiveFlag, unless the flag doesnt exist, in that case it's null.
-     */
-    public LiveFlag getFlag(String flag) {
-        return flags.get(flag);
+
+    public <G, F extends ParsedType<G>> G getFlag(Class<? extends AbstractFlag<F>> cls) {
+        return (G) flags.get(classToString.get(cls));
     }
-    
+
+    public <G> G getFlag(String flag) {
+        return (G) flags.get(flag);
+    }
+
     /**
      * Check if this command context contains certain flags.
      * @param flag The flag to check
@@ -81,13 +79,19 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
         return flags.get(flag) != null;
     }
 
+    public boolean hasFlag(Class<? extends AbstractFlag<?>> cls) {
+        return classToString.get(cls) != null;
+    }
+
     //This is used to set the flags used in this particular command execution
-    void setFlags(List<LiveFlag> flags) {
-        flags.forEach(f -> this.flags.put(f.getFlag().getFlagString(), f));
+    void setFlags(Map<Class<? extends AbstractFlag<?>>, String> classToString, Map<String, Object> flags) {
+        this.classToString.putAll(classToString);
+        this.flags.putAll(flags);
     }
     
     //This is used to set the arguments after the flags and their parts have been excluded.
     void setArgs(String... args) {
+        this.args = null;
         this.args = args;
     }
     

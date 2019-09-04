@@ -36,6 +36,7 @@ public abstract class AbstractTabContext<C extends AbstractCommandContext<C, T>,
     public AbstractTabContext(Plugin plugin, BCICommand<C, T> command, CommandSender sender, String[] args, String alias) {
         super(plugin, command, sender, args, alias);
         this.possible = new ArrayList<>();
+        System.out.println(args.length + "TC");
     }
 
     /**

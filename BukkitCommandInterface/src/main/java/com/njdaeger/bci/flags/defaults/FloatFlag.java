@@ -18,7 +18,7 @@ public final class FloatFlag extends AbstractFlag<FloatType> {
     }
     
     @Override
-    protected FloatType getFlagType() {
+    public FloatType getFlagType() {
         return new FloatType();
     }
 }

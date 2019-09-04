@@ -18,7 +18,7 @@ public final class DoubleFlag extends AbstractFlag<DoubleType> {
     }
     
     @Override
-    protected DoubleType getFlagType() {
+    public DoubleType getFlagType() {
         return new DoubleType();
     }
 }

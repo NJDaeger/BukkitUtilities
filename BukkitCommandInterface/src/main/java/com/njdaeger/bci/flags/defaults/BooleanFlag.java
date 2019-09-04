@@ -18,7 +18,7 @@ public final class BooleanFlag extends AbstractFlag<BooleanType> {
     }
     
     @Override
-    protected BooleanType getFlagType() {
+    public BooleanType getFlagType() {
         return new BooleanType();
     }
 }

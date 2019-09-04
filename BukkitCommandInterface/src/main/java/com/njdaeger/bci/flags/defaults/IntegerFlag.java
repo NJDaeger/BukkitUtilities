@@ -18,7 +18,7 @@ public final class IntegerFlag extends AbstractFlag<IntegerType> {
     }
     
     @Override
-    protected IntegerType getFlagType() {
+    public IntegerType getFlagType() {
         return new IntegerType();
     }
 }
