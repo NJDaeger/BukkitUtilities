@@ -1,14 +1,9 @@
 package com.njdaeger.bci.base;
 
 import com.njdaeger.bci.SenderType;
-import com.njdaeger.bci.Utils;
 import com.njdaeger.bci.base.executors.TabExecutor;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -36,7 +31,6 @@ public abstract class AbstractTabContext<C extends AbstractCommandContext<C, T>,
     public AbstractTabContext(Plugin plugin, BCICommand<C, T> command, CommandSender sender, String[] args, String alias) {
         super(plugin, command, sender, args, alias);
         this.possible = new ArrayList<>();
-        System.out.println(args.length + "TC");
     }
 
     /**
@@ -85,7 +79,7 @@ public abstract class AbstractTabContext<C extends AbstractCommandContext<C, T>,
      * @return The current arg being typed
      */
     public String getCurrent() {
-        return isLength(0) ? null : argAt(getLength() - 1);
+        return isLength(0) ? null : argAt(getLength() - 1).trim();
     }
 
     /**

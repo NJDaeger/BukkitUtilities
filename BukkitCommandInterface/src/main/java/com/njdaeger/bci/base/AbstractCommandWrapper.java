@@ -4,13 +4,16 @@ import com.njdaeger.bci.exceptions.PermissionDeniedException;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;
+import org.bukkit.help.GenericCommandHelpTopic;
+import org.bukkit.help.HelpTopic;
+import org.bukkit.help.HelpTopicFactory;
 import org.bukkit.plugin.Plugin;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-public abstract class AbstractCommandWrapper<C extends AbstractCommandContext<C, T>, T extends AbstractTabContext<C, T>> extends Command implements PluginIdentifiableCommand {
+public abstract class AbstractCommandWrapper<C extends AbstractCommandContext<C, T>, T extends AbstractTabContext<C, T>> extends Command implements PluginIdentifiableCommand, HelpTopicFactory<AbstractCommandWrapper<C, T>> {
     
     protected final BCICommand<C, T> command;
     private final String[] permissions;
@@ -30,6 +33,13 @@ public abstract class AbstractCommandWrapper<C extends AbstractCommandContext<C,
         this.permissions = command.getPermissions();
         this.setAliases(Arrays.asList(command.getAliases()));
     }
+
+    @Override
+    public boolean isRegistered() {
+        return true;
+    }
+
+
 
     /**
      * Tests to see if the command sender has permission to run this command or not. This is used for the help map.
@@ -87,5 +97,10 @@ public abstract class AbstractCommandWrapper<C extends AbstractCommandContext<C,
     @Override
     public Plugin getPlugin() {
         return plugin;
+    }
+
+    @Override
+    public HelpTopic createTopic(AbstractCommandWrapper<C, T> command) {
+        return new GenericCommandHelpTopic(command);
     }
 }

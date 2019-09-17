@@ -53,7 +53,6 @@ public abstract class AbstractCommandContext<C extends AbstractCommandContext<C,
         this.sender = sender;
         this.alias = alias;
         this.args = args;
-        System.out.println(args.length + "CC");
     }
     
     /**

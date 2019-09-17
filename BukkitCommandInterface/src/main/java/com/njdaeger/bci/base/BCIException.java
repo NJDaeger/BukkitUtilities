@@ -3,9 +3,20 @@ package com.njdaeger.bci.base;
 import org.bukkit.command.CommandSender;
 
 public class BCIException extends Exception {
-    
-    public BCIException(String message) {
+
+    private boolean quiet;
+
+    public BCIException(String message, boolean quiet) {
         super(message, null, true, false);
+        this.quiet = quiet;
+    }
+
+    public BCIException(String message) {
+        this(message, false);
+    }
+
+    public BCIException() {
+        this(null, true);
     }
 
     /**
@@ -13,7 +24,7 @@ public class BCIException extends Exception {
      * @param sender The sender to send the message to
      */
     public void showError(CommandSender sender) {
-        sender.sendMessage(getMessage());
+        if (!quiet) sender.sendMessage(getMessage());
     }
     
 }

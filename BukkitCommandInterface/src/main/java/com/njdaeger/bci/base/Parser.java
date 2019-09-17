@@ -1,6 +1,7 @@
 package com.njdaeger.bci.base;
 
 import com.njdaeger.bci.flags.AbstractFlag;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -26,10 +27,19 @@ public final class Parser {
             flagToString.put((Class<? extends AbstractFlag<?>>) flag.getClass(), flag.getFlagString());
             stringToObject.put(flag.getFlagString(), flag.getFlagType().parse(getRawValue(flag, matcher.group())));
         }
-        System.out.println(Arrays.toString(command.args));
-        System.out.println(Arrays.toString(Stream.of(argumentString.trim().split(" ")).map(" "::concat).toArray(String[]::new)));
         command.setFlags(flagToString, stringToObject);
-        command.setArgs(Stream.of(argumentString.trim().split(" ")).map(" "::concat).toArray(String[]::new));
+        command.setArgs(splitArgumentString(argumentString));
+    }
+
+    private static String[] splitArgumentString(String argumentString) {
+        String normalized = StringUtils.normalizeSpace(argumentString);
+        String[] split = normalized.trim().split(" ");
+        List<String> composed = new ArrayList<>();
+        for (String s : split) {
+            if (!s.trim().isEmpty() && !s.trim().equals(" ")) composed.add(s.trim());
+        }
+        if (argumentString.endsWith(" ") || argumentString.isEmpty()) composed.add(" ");
+        return composed.toArray(new String[0]);
     }
 
     private static String getRawValue(AbstractFlag<?> flag, String entireFlag) {

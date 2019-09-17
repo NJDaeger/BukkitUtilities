@@ -16,7 +16,6 @@ public abstract class ParsedType<T> {
      * @throws ArgumentParseException If the parsing failed.
      */
     public abstract T parse(String input) throws BCIException;
-    
     /**
      * Gets the generic type class.
      * @return The generic type class.

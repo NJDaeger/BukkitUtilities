@@ -294,67 +294,46 @@ public class BCICommand<C extends AbstractCommandContext<C, T>, T extends Abstra
 
         try {
 
-            /*
-
-            Order of completions:
-
-            check if current argument set has any flags
-
-
-             */
-
             List<String> possible = new ArrayList<>();
 
-            System.out.println(context.args.length + "PRE PARSE");
             if (hasFlags() && context.hasArgs()) Parser.parseFlags(context);
-            System.out.println(context.args.length + "POST PARSE");
-            /*System.out.println(context.getArgs());
-            System.out.println(context.getLength());*/
 
-            if (context.getCurrent() == null) {
-                List<String> current = context.currentPossibleCompletions();
-                //Complete all flags which havent been used.
-                if (hasFlags()) {
-                    for (String flag : flags.keySet()) {
-                        if (!context.hasFlag(flag)) current.add(flags.get(flag).getRawFlag());
-                    }
-                }
-                return current;
-            }
-
-            if (tabExecutor != null) {
-                tabExecutor.complete(context);
-            }
+            if (context.getCurrent() == null) return computePossible(context.currentPossibleCompletions(), context);
 
             for (AbstractFlag flag : flags.values()) {
                 if (context.hasFlag(flag.getFlagString())) continue;
                 if ((flag.hasFollowingValue() && context.getPrevious().equals(flag.getRawFlag())) || flag.isSplitFlag() && context.getCurrent().startsWith(flag.getRawFlag())) {
                     if (flag instanceof TabExecutor) {
                         ((TabExecutor<T>) flag).complete(context);
-                        //return computePossible(context.currentPossibleCompletions(), context);
+                        return computePossible(context.currentPossibleCompletions(), context);
                     }
                 }
             }
 
-           /* if (tabExecutor != null) {
+            if (tabExecutor != null) {
                 tabExecutor.complete(context);
-
-                return computePossible(context.currentPossibleCompletions(), context);
-
-            }*/
+            }
 
            return computePossible(context.currentPossibleCompletions(), context);
 
         } catch (BCIException e) {
             e.showError(context.getSender());
         }
-        return null;
+        return computePossible(context.currentPossibleCompletions(), context);
     }
 
     private List<String> computePossible(List<String> currentPossible, T context) {
+        if (hasFlags()) {
+            for (String flag : flags.keySet()) {
+                if (!context.hasFlag(flag)) currentPossible.add(flags.get(flag).getRawFlag());
+            }
+        }
         List<String> possible = new ArrayList<>();
         List<String> fuzzyPossible = new ArrayList<>();
         for (String completion : currentPossible) {
+            if (context.getCurrent() == null) {
+                return currentPossible;
+            }
             if (completion.toLowerCase().startsWith(context.getCurrent().toLowerCase())) {
                 possible.add(completion);
             } else if (completion.toLowerCase().contains(context.getCurrent().toLowerCase()))  fuzzyPossible.add(completion);
