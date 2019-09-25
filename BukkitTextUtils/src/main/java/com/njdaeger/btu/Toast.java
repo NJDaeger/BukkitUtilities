@@ -1,11 +1,8 @@
 package com.njdaeger.btu;
 
-import com.google.gson.JsonObject;
-import net.minecraft.server.v1_13_R2.PacketPlayOutAdvancements;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
-import org.json.simple.JSONObject;
 
 import java.util.UUID;
 
